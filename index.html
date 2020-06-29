@@ -7,6 +7,7 @@
             height: 100%;
             margin: 0;
             overflow-y: hidden;
+            background-color: black;
         }
 
         #info {
@@ -49,8 +50,14 @@
             cursor: pointer;
         }
 
-        #paragraph {
+        .paragraph {
             margin-bottom: 10px;
+        }
+
+        #no-webgl2 {
+            display: none;
+            color: red;
+            font-weight: bold;
         }
     </style>
     <script src="lib/gl-matrix.js"></script>
@@ -84,26 +91,31 @@
         <h3>
             Tesseract Explorer
         </h3>
-        <div id="paragraph">
+        <div class="paragraph">
             By <a href="https://twitter.com/thsherif">Tarek Sherif</a>
         </div>
-        <div id="paragraph">
+        <div id="no-webgl2" class="paragraph">
+            Oh no! This browser doesn't support WebGL 2! You can read about the tesseract here, but you'll need the latest version of Chrome, Firefox or Edge on desktop or Android to use the Explorer!
+        </div>
+        <div class="paragraph">
             Welcome to the 4<sup>th</sup> dimension! The controls on the right will manipulate the tesseract in 4D space, and you can manipulate its 3D image by clicking and dragging with your mouse. To get you started, a favourite view of mine is cutout rendering, orthographic projection, and 45 degree rotations in the XW, YW, ZW planes.
         </div>
         <div id="more-info-button">
             Show Details
         </div>
         <div id="more-info">
-            <div id="paragraph">
+            <div class="paragraph">
                 This is a tesseract, also known as hypercube or an 8-cell. It is the 4D analog of the 2D square and the 3D cube. Its 3D "surface" is composed of 8 cubes, called cells, 2 along each of the 4 axes, X, Y, Z, and W. A way to imagine the shape of the tesseract is that space is folded such that each of the six faces of each cell are flush with one face of 6 other cells, with the only cell left out being the opposite one on the same axis. This is analogous to the 4 edges of each square face of a 3D cube being flush with the edges of 4 other faces, an impossible formation in 2D space, but possible with the folding into 3D.
             </div>
-            <div id="paragraph">
+            <div class="paragraph">
                 Obviously, we can't directly visualize a tesseract, since we only live in 3 dimensions, so what's displayed is a "photograph" from 4 dimensions onto the 3D "film" of our universe (in the same way we photograph our 3D universe onto the 2D film of a camera). I highly recommend <a href="http://eusebeia.dyndns.org/4d/vis/vis">this site</a> for a primer on visualizing 4D shapes.
             </div>
         </div>
     </div>
     <canvas id="gl-canvas"></canvas>
     <script type="module">
+        import { webgl2Test } from "./lib/utils.js"; 
+
         const moreInfoPanel = document.getElementById("more-info");
         document.getElementById("more-info-button").addEventListener("click", e => {
             if (moreInfoPanel.clientWidth === 0) {
@@ -1077,6 +1089,11 @@
         `;
                
         const canvas = document.getElementById("gl-canvas");
+
+        if (!webgl2Test(canvas, ["EXT_color_buffer_float"])) {
+            document.getElementById("no-webgl2").style.display = "block";
+        }
+
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
         
