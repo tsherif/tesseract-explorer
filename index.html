@@ -1151,6 +1151,15 @@
             .colorTarget(0, shadowDebugTarget)
             .depthTarget(shadowDepthTarget);
 
+            window.addEventListener("resize", () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+
+                app.resize(canvas.width, canvas.height);
+                oitFBO.resize();
+                shadowBuffer.resize();
+            });
+
             ///////////////////////
             // GEOMETRY
             ///////////////////////
