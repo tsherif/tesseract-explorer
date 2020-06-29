@@ -1,12 +1,56 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Sketch</title>
+    <title>Tesseract Explorer</title>
     <style>
         html, body {
             height: 100%;
             margin: 0;
             overflow-y: hidden;
+        }
+
+        #info {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 30%;
+            z-index: 999;
+            color: white;
+            padding: 0 10px 10px 10px;
+            font-size: 20px;
+            box-sizing: border-box;
+            pointer-events: none;
+        }
+
+        #info h3 {
+            margin-top: 10px;
+            margin-bottom: 10px;
+            font-size: 30px;
+        }
+
+        #info a {
+            color: white;
+            pointer-events: auto;
+        }
+
+        #more-info {
+            display: none;
+        }
+
+        #more-info-button {
+            font-weight: bold;
+            background-color: #1e8eff;
+            color: white;
+            padding: 8px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            display: inline-block;
+            pointer-events: auto;
+            cursor: pointer;
+        }
+
+        #paragraph {
+            margin-bottom: 10px;
         }
     </style>
     <script src="lib/gl-matrix.js"></script>
@@ -36,8 +80,41 @@
   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 -->
 <body>
+    <div id="info">
+        <h3>
+            Tesseract Explorer
+        </h3>
+        <div id="paragraph">
+            By <a href="https://twitter.com/thsherif">Tarek Sherif</a>
+        </div>
+        <div id="paragraph">
+            Welcome to the 4<sup>th</sup> dimension! The controls on the right will manipulate the tesseract in 4D space, and you can manipulate its 3D image by clicking and dragging with your mouse. To get you started, a favourite view of mine is cutout rendering, orthographic projection, and 45 degree rotations in the XW, YW, ZW planes.
+        </div>
+        <div id="more-info-button">
+            Show Details
+        </div>
+        <div id="more-info">
+            <div id="paragraph">
+                This is a tesseract, also known as hypercube or an 8-cell. It is the 4D analog of the 2D square and the 3D cube. Its 3D "surface" is composed of 8 cubes, called cells, 2 along each of the 4 axes, X, Y, Z, and W. A way to imagine the shape of the tesseract is that space is folded such that each of the six faces of each cell are flush with one face of 6 other cells, with the only cell left out being the opposite one on the same axis. This is analogous to the 4 edges of each square face of a 3D cube being flush with the edges of 4 other faces, an impossible formation in 2D space, but possible with the folding into 3D.
+            </div>
+            <div id="paragraph">
+                Obviously, we can't directly visualize a tesseract, since we only live in 3D dimensions, so what's being "photographed" from 4 dimensions onto the 3D "film" of our universe (in the same way we photograph our 3D universe onto the 2D film of a camera). I highly recommend <a href="http://eusebeia.dyndns.org/4d/vis/vis">this site</a> for a primer on visualizing 4D shapes.
+            </div>
+        </div>
+    </div>
     <canvas id="gl-canvas"></canvas>
     <script type="module">
+        const moreInfoPanel = document.getElementById("more-info");
+        document.getElementById("more-info-button").addEventListener("click", e => {
+            if (moreInfoPanel.clientWidth === 0) {
+                moreInfoPanel.style.display = "block";
+                e.target.innerText = "Hide Details"
+            } else {
+                moreInfoPanel.style.display = "none"; 
+                e.target.innerText = "Show Details"
+            }
+        });
+
         const RADIANS = Math.PI / 180;
         const FOCAL_LENGTH = 2;
         const CAMERA_W_OFFSET = 3;
@@ -1161,18 +1238,18 @@
                 transformDirty = true; 
             };
 
-            gui.add(settings, "Projection", ["perspective", "orthographic"]).onChange(setTransformDirty);
             gui.add(settings, "Rendering", ["transparent", "cutout", "solid"]);
+            gui.add(settings, "Projection", ["perspective", "orthographic"]).onChange(setTransformDirty);
             gui.add(settings, "Colorization", ["axis", "cell"]);
             gui.add(settings, "Unfold", 0, 1).step(0.01).onChange(setTransformDirty);
 
             const rotationFolder = gui.addFolder("Rotations")
-            rotationFolder.add(settings.rotations, "XY", 0, 360).onChange(setTransformDirty);
-            rotationFolder.add(settings.rotations, "XZ", 0, 360).onChange(setTransformDirty);
             rotationFolder.add(settings.rotations, "XW", 0, 360).onChange(setTransformDirty);
-            rotationFolder.add(settings.rotations, "YZ", 0, 360).onChange(setTransformDirty);
             rotationFolder.add(settings.rotations, "YW", 0, 360).onChange(setTransformDirty);
             rotationFolder.add(settings.rotations, "ZW", 0, 360).onChange(setTransformDirty);
+            rotationFolder.add(settings.rotations, "XY", 0, 360).onChange(setTransformDirty);
+            rotationFolder.add(settings.rotations, "XZ", 0, 360).onChange(setTransformDirty);
+            rotationFolder.add(settings.rotations, "YZ", 0, 360).onChange(setTransformDirty);
             rotationFolder.open();
 
             const scaleFolder = gui.addFolder("Scale")
