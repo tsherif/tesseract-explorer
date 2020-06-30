@@ -13,7 +13,7 @@ html, body {
     z-index: 999;
     color: white;
     padding: 0 10px 10px 10px;
-    font-size: 20px;
+    font-size: 18px;
     box-sizing: border-box;
     pointer-events: none;
     font-family: 'Lucida Grande', sans-serif;
@@ -38,12 +38,13 @@ html, body {
     font-weight: bold;
     background-color: #1e8eff;
     color: white;
-    padding: 8px;
-    margin-top: 10px;
+    padding: 6px 8px;
+    margin-top: 6px;
     margin-bottom: 10px;
     display: inline-block;
     pointer-events: auto;
     cursor: pointer;
+    font-size: 14px;
 }
 
 .paragraph {

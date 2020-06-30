@@ -266,7 +266,7 @@
             internalFormat: PicoGL.RGBA16F 
         });
 
-        const oitFBO = app.createFramebuffer()
+        const oitBuffer = app.createFramebuffer()
         .colorTarget(0, oitTarget)
         .colorTarget(1, oitAlphaTarget);
 
@@ -302,25 +302,26 @@
         ["frontW", "frontX", "frontY", "frontZ", "backX", "backY", "backZ", "backW"].forEach((direction, i) => {
             const positions = app.createVertexBuffer(PicoGL.FLOAT, 3,  tesseractProjecton[direction]);
             const uvFactors = app.createVertexBuffer(PicoGL.FLOAT, 1,  uvProjections[direction]);
-            const cellArray = app.createVertexArray()
+            
+            const vao = app.createVertexArray()
             .vertexAttributeBuffer(0, positions)
             .vertexAttributeBuffer(1, uvs)
             .vertexAttributeBuffer(2, uvFactors);
 
-            const transparentDrawCall = app.createDrawCall(transparentProgram, cellArray)
+            const transparentDrawCall = app.createDrawCall(transparentProgram, vao)
             .uniform("lightPosition", lightPosition);
 
-            const opaqueDrawCall = app.createDrawCall(opaqueProgram, cellArray)
+            const opaqueDrawCall = app.createDrawCall(opaqueProgram, vao)
             .uniform("lightPosition", lightPosition)
             .texture("shadowMap", shadowDepthTarget);
 
-            const shadowDrawCall = app.createDrawCall(shadowProgram, cellArray);
+            const shadowDrawCall = app.createDrawCall(shadowProgram, vao);
 
             objects[i] = {
                 direction,
                 positions,
                 uvFactors,
-                vao: cellArray,
+                vao,
                 transparentDrawCall,
                 opaqueDrawCall,
                 shadowDrawCall
@@ -334,8 +335,8 @@
 
         const oitDrawcall = app.createDrawCall(oitProgram, quadVAO)
         .primitive(PicoGL.TRIANGLE_STRIP)
-        .texture("uAccumulate", oitTarget)
-        .texture("uAccumulateAlpha", oitAlphaTarget);
+        .texture("oitColor", oitTarget)
+        .texture("oitAlpha", oitAlphaTarget);
 
         /////////////////
         // INTERACTIONS
@@ -361,7 +362,7 @@
             canvas.height = window.innerHeight;
 
             app.resize(canvas.width, canvas.height);
-            oitFBO.resize();
+            oitBuffer.resize();
             shadowBuffer.resize();
         });
 
@@ -395,7 +396,7 @@
             );
 
             if (transparent) {
-                app.drawFramebuffer(oitFBO)
+                app.drawFramebuffer(oitBuffer)
                 .disable(PicoGL.DEPTH_TEST)
                 .enable(PicoGL.BLEND)
                 .blendFuncSeparate(PicoGL.ONE, PicoGL.ONE, PicoGL.ZERO, PicoGL.ONE_MINUS_SRC_ALPHA)

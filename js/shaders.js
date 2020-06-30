@@ -24,8 +24,6 @@
 export const vsTesseract = `
     #version 300 es
 
-    layout(std140, column_major) uniform;
-
     layout(location=0) in vec3 position;
     layout(location=1) in vec2 uv;
     layout(location=2) in float uvProjection;
@@ -39,29 +37,37 @@ export const vsTesseract = `
     out vec4 vShadowProjection;
     
     void main() {
-        vec4 viewPosition = view * vec4(position, 1.0);
+        vec4 pos = vec4(position, 1.0);
+        vec4 viewPosition = view * pos;
         vPosition = viewPosition.xyz; 
         vUV = vec3(uv, 1.0) * uvProjection;
-        vShadowProjection = proj * shadowView * vec4(position, 1.0);
+        vShadowProjection = proj * shadowView * pos;
         gl_Position = proj * viewPosition;
+    }
+`;
+
+export const vsScreenQuad = `
+    #version 300 es
+
+    layout(location=0) in vec4 position;
+    
+    void main() {
+        gl_Position = position;
     }
 `;
 
 export const fsTransparent = `
     #version 300 es
     precision highp float;
-
-    layout(std140, column_major) uniform;
+    
+    in vec3 vPosition;
 
     uniform vec3 color;
     uniform vec3 eyePosition;
     uniform vec3 lightPosition;
-    uniform bool cutout;
 
-    in vec3 vPosition;
-
-    layout(location=0) out vec4 accumColor;
-    layout(location=1) out float accumAlpha;
+    layout(location=0) out vec4 oitColor;
+    layout(location=1) out float oitAlpha;
 
     float weight(float z, float a) {
         return 2.0 - z;
@@ -84,25 +90,42 @@ export const fsTransparent = `
 
         vec4 color = vec4((ambient + diffuse + specular) * baseColor.rgb, 1.0) * 0.5;
         float w = weight(gl_FragCoord.z, color.a);
-        accumColor = vec4(color.rgb * w, color.a);
-        accumAlpha = color.a * w;
+        oitColor = vec4(color.rgb * w, color.a);
+        oitAlpha = color.a * w;
+    }
+`;
+
+export const fsOIT = `
+    #version 300 es
+    precision highp float;
+
+    uniform sampler2D oitColor;
+    uniform sampler2D oitAlpha;
+
+    out vec4 fragColor;
+    
+    void main() {
+        ivec2 fragCoord = ivec2(gl_FragCoord.xy);
+        vec4 accum = texelFetch(oitColor, fragCoord, 0);
+        float a = 1.0 - accum.a;
+        accum.a = texelFetch(oitAlpha, fragCoord, 0).r;
+        fragColor = vec4(a * accum.rgb / clamp(accum.a, 0.001, 50000.0), a);
     }
 `;
 
 export const fsOpaque = `
     #version 300 es
     precision highp float;
+    
+    in vec3 vPosition;
+    in vec3 vUV;
+    in vec4 vShadowProjection;
 
     uniform vec3 color;
     uniform vec3 eyePosition;
     uniform vec3 lightPosition;
     uniform bool cutout;
-
     uniform highp sampler2DShadow shadowMap;
-
-    in vec3 vPosition;
-    in vec3 vUV;
-    in vec4 vShadowProjection;
 
     out vec4 fragColor;
 
@@ -141,61 +164,15 @@ export const fsShadow = `
     #version 300 es
     precision highp float;
 
-    uniform bool cutout;
-
     in vec3 vPosition;
     in vec3 vUV;
 
-    out vec4 fragColor;
+    uniform bool cutout;
 
     void main() {
         vec2 cutoutUV = (vUV.xy / vUV.z) * 2.0 - 1.0;
         if (cutout && dot(cutoutUV, cutoutUV) < 0.7) {
             discard;
         }
-
-        float z = gl_FragCoord.z;
-
-        z = z * z * z * z;
-        fragColor = vec4(z, 0.0, 1.0, 1.0);
-    }
-`;
-
-export const vsScreenQuad = `
-    #version 300 es
-
-    layout(location=0) in vec4 aPosition;
-    
-    void main() {
-        gl_Position = aPosition;
-    }
-`;
-
-export const fsOIT = `
-    #version 300 es
-    precision highp float;
-
-    uniform sampler2D uAccumulate;
-    uniform sampler2D uAccumulateAlpha;
-    out vec4 fragColor;
-    void main() {
-        ivec2 fragCoord = ivec2(gl_FragCoord.xy);
-        vec4 accum = texelFetch(uAccumulate, fragCoord, 0);
-        float a = 1.0 - accum.a;
-        accum.a = texelFetch(uAccumulateAlpha, fragCoord, 0).r;
-        fragColor = vec4(a * accum.rgb / clamp(accum.a, 0.001, 50000.0), a);
-    }
-`;
-
-export const fsShadowDebug = `
-    #version 300 es
-    precision highp float;
-
-    uniform sampler2D shadow;
-
-    out vec4 fragColor;
-    void main() {
-        ivec2 fragCoord = ivec2(gl_FragCoord.xy);
-        fragColor = vec4(texelFetch(shadow, fragCoord, 0).rgb, 1.0);
     }
 `;
