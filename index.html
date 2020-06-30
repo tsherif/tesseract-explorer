@@ -258,6 +258,13 @@
         //////////////////////////
         // OIT FRAMEBUFFERS
         //////////////////////////
+        const oitMSAATarget = app.createRenderbuffer(app.width, app.height, PicoGL.RGBA16F, Math.min(4, PicoGL.WEBGL_INFO.SAMPLES));
+        const oitAlphaMSAATarget = app.createRenderbuffer(app.width, app.height, PicoGL.RGBA16F, Math.min(4, PicoGL.WEBGL_INFO.SAMPLES));
+
+        const oitMSAABuffer = app.createFramebuffer()
+        .colorTarget(0, oitMSAATarget)
+        .colorTarget(1, oitAlphaMSAATarget);
+
         const oitTarget = app.createTexture2D(app.width, app.height, { 
             internalFormat: PicoGL.RGBA16F 
         });
@@ -362,6 +369,7 @@
             canvas.height = window.innerHeight;
 
             app.resize(canvas.width, canvas.height);
+            oitMSAABuffer.resize();
             oitBuffer.resize();
             shadowBuffer.resize();
         });
@@ -396,7 +404,7 @@
             );
 
             if (transparent) {
-                app.drawFramebuffer(oitBuffer)
+                app.drawFramebuffer(oitMSAABuffer)
                 .disable(PicoGL.DEPTH_TEST)
                 .enable(PicoGL.BLEND)
                 .blendFuncSeparate(PicoGL.ONE, PicoGL.ONE, PicoGL.ZERO, PicoGL.ONE_MINUS_SRC_ALPHA)
@@ -413,6 +421,19 @@
                         .draw();
                     }
                 }
+
+                app.readFramebuffer(oitMSAABuffer)
+                .drawFramebuffer(oitBuffer)
+
+                app.gl.drawBuffers([PicoGL.COLOR_ATTACHMENT0, PicoGL.NONE]);
+                app.gl.readBuffer(PicoGL.COLOR_ATTACHMENT0);
+                app.blitFramebuffer(PicoGL.COLOR_BUFFER_BIT);
+
+                app.gl.drawBuffers([PicoGL.NONE, PicoGL.COLOR_ATTACHMENT1]);
+                app.gl.readBuffer(PicoGL.COLOR_ATTACHMENT1);
+                app.blitFramebuffer(PicoGL.COLOR_BUFFER_BIT);
+
+                app.gl.drawBuffers([PicoGL.COLOR_ATTACHMENT0, PicoGL.COLOR_ATTACHMENT1])
 
                 app.defaultDrawFramebuffer()
                 .blendFunc(PicoGL.ONE, PicoGL.ONE_MINUS_SRC_ALPHA)
