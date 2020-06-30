@@ -51,8 +51,11 @@ export const vsScreenQuad = `
 
     layout(location=0) in vec4 position;
     
+    out vec2 vUV;
+
     void main() {
         gl_Position = position;
+        vUV = gl_Position.xy * 0.5 + 0.5;
     }
 `;
 
@@ -99,6 +102,8 @@ export const fsOIT = `
     #version 300 es
     precision highp float;
 
+    in vec2 vUV;
+
     uniform sampler2D oitColor;
     uniform sampler2D oitAlpha;
 
@@ -106,9 +111,9 @@ export const fsOIT = `
     
     void main() {
         ivec2 fragCoord = ivec2(gl_FragCoord.xy);
-        vec4 accum = texelFetch(oitColor, fragCoord, 0);
+        vec4 accum = texture(oitColor, vUV);
         float a = 1.0 - accum.a;
-        accum.a = texelFetch(oitAlpha, fragCoord, 0).r;
+        accum.a = texture(oitAlpha, vUV).r;
         fragColor = vec4(a * accum.rgb / clamp(accum.a, 0.001, 50000.0), a);
     }
 `;
@@ -164,7 +169,6 @@ export const fsShadow = `
     #version 300 es
     precision highp float;
 
-    in vec3 vPosition;
     in vec3 vUV;
 
     uniform bool cutout;

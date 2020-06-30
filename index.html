@@ -96,6 +96,8 @@
 
     import { setupInteractions } from "./js/interactions.js";
 
+    import { profileRenderLoop } from "./js/debug.js";
+
     //////////////////////////
     // CONSTANTS AND SETTINGS
     //////////////////////////
@@ -105,6 +107,9 @@
     const CAMERA_W_OFFSET = 3;
     const MAX_ZOOM = 7;
     const MIN_ZOOM = 0.1;
+
+    // FOR OIT
+    const SSAA_MULTIPLIER = 2;
 
     const COLORS_AXIS = {
         frontX: new Float32Array([0.86, 0.08, 0.24]),
@@ -258,19 +263,17 @@
         //////////////////////////
         // OIT FRAMEBUFFERS
         //////////////////////////
-        const oitMSAATarget = app.createRenderbuffer(app.width, app.height, PicoGL.RGBA16F, Math.min(4, PicoGL.WEBGL_INFO.SAMPLES));
-        const oitAlphaMSAATarget = app.createRenderbuffer(app.width, app.height, PicoGL.RGBA16F, Math.min(4, PicoGL.WEBGL_INFO.SAMPLES));
 
-        const oitMSAABuffer = app.createFramebuffer()
-        .colorTarget(0, oitMSAATarget)
-        .colorTarget(1, oitAlphaMSAATarget);
-
-        const oitTarget = app.createTexture2D(app.width, app.height, { 
-            internalFormat: PicoGL.RGBA16F 
+        const oitTarget = app.createTexture2D(app.width * SSAA_MULTIPLIER, app.height * SSAA_MULTIPLIER, { 
+            internalFormat: PicoGL.RGBA16F,
+            minFilter: PicoGL.LINEAR,
+            magFilter: PicoGL.LINEAR 
         });
 
-        const oitAlphaTarget = app.createTexture2D(app.width, app.height, { 
-            internalFormat: PicoGL.RGBA16F 
+        const oitAlphaTarget = app.createTexture2D(app.width * SSAA_MULTIPLIER, app.height * SSAA_MULTIPLIER, { 
+            internalFormat: PicoGL.RGBA16F,
+            minFilter: PicoGL.LINEAR,
+            magFilter: PicoGL.LINEAR 
         });
 
         const oitBuffer = app.createFramebuffer()
@@ -369,8 +372,7 @@
             canvas.height = window.innerHeight;
 
             app.resize(canvas.width, canvas.height);
-            oitMSAABuffer.resize();
-            oitBuffer.resize();
+            oitBuffer.resize(app.width * SSAA_MULTIPLIER, app.height * SSAA_MULTIPLIER);
             shadowBuffer.resize();
         });
 
@@ -404,7 +406,8 @@
             );
 
             if (transparent) {
-                app.drawFramebuffer(oitMSAABuffer)
+                app.drawFramebuffer(oitBuffer)
+                .viewport(0, 0, app.width * SSAA_MULTIPLIER, app.height * SSAA_MULTIPLIER)
                 .disable(PicoGL.DEPTH_TEST)
                 .enable(PicoGL.BLEND)
                 .blendFuncSeparate(PicoGL.ONE, PicoGL.ONE, PicoGL.ZERO, PicoGL.ONE_MINUS_SRC_ALPHA)
@@ -422,20 +425,8 @@
                     }
                 }
 
-                app.readFramebuffer(oitMSAABuffer)
-                .drawFramebuffer(oitBuffer)
-
-                app.gl.drawBuffers([PicoGL.COLOR_ATTACHMENT0, PicoGL.NONE]);
-                app.gl.readBuffer(PicoGL.COLOR_ATTACHMENT0);
-                app.blitFramebuffer(PicoGL.COLOR_BUFFER_BIT);
-
-                app.gl.drawBuffers([PicoGL.NONE, PicoGL.COLOR_ATTACHMENT1]);
-                app.gl.readBuffer(PicoGL.COLOR_ATTACHMENT1);
-                app.blitFramebuffer(PicoGL.COLOR_BUFFER_BIT);
-
-                app.gl.drawBuffers([PicoGL.COLOR_ATTACHMENT0, PicoGL.COLOR_ATTACHMENT1])
-
                 app.defaultDrawFramebuffer()
+                .viewport(0, 0, app.width, app.height)
                 .blendFunc(PicoGL.ONE, PicoGL.ONE_MINUS_SRC_ALPHA)
                 .clear();
 
