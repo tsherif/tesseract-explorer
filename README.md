@@ -4,7 +4,7 @@ Welcome to the 4<sup>th</sup> dimension!
 
 Visit the live application [here](https://tsherif.github.io/tesseract-explorer/)!
 
-## Overview
+## What's a Tesseract?
 
 A [tesseract](https://en.wikipedia.org/wiki/Tesseract), also known as hypercube or an 8-cell, is the 4D analog to the 2D square and the 3D cube. Its 3D "surface" is composed of 8 cubes, called cells, 2 along each of the 4 axes, X, Y, Z, and W. These cells enclose the 4D hypervolume of the tesseract. A way to imagine the shape of the tesseract is that space is folded such that each of the six faces of each cell are flush with one face of 6 other cells, with the only cell left out being the opposite one on the same axis. This is analogous to the 4 edges of each square face of a 3D cube being flush with the edges of 4 of its other faces, an impossible formation in 2D space, but possible with the folding into 3D.
 
