@@ -1,8 +1,6 @@
 # Tesseract Explorer
 
-Welcome to the 4<sup>th</sup> dimension! 
-
-Visit the live application [here](https://tsherif.github.io/tesseract-explorer/)!
+Welcome to the 4<sup>th</sup> dimension! Visit the live application [here](https://tsherif.github.io/tesseract-explorer/)!
 
 ## What's a Tesseract?
 
