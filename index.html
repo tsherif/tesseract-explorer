@@ -99,17 +99,17 @@
             Oh no! This browser doesn't support WebGL 2! You can read about the tesseract here, but you'll need the latest version of Chrome, Firefox or Edge on desktop or Android to use the Explorer!
         </div>
         <div class="paragraph">
-            Welcome to the 4<sup>th</sup> dimension! The controls on the right will manipulate the tesseract in 4D space, and you can manipulate its 3D image by clicking and dragging with your mouse. To get you started, a favourite view of mine is cutout rendering, orthographic projection, and 45 degree rotations in the XW, YW, ZW planes.
+            Welcome to the 4<sup>th</sup> dimension! The controls on the right will manipulate the tesseract in 4D space, and you can manipulate its 3D projection by clicking and dragging with your mouse. To get you started, a favourite view of mine is cutout rendering, orthographic projection, and 45 degree rotations in the XW, YW, ZW planes.
         </div>
         <div id="more-info-button">
             Show Details
         </div>
         <div id="more-info">
             <div class="paragraph">
-                This is a tesseract, also known as hypercube or an 8-cell. It is the 4D analog of the 2D square and the 3D cube. Its 3D "surface" is composed of 8 cubes, called cells, 2 along each of the 4 axes, X, Y, Z, and W. A way to imagine the shape of the tesseract is that space is folded such that each of the six faces of each cell are flush with one face of 6 other cells, with the only cell left out being the opposite one on the same axis. This is analogous to the 4 edges of each square face of a 3D cube being flush with the edges of 4 other faces, an impossible formation in 2D space, but possible with the folding into 3D.
+                This is a tesseract, also known as hypercube or an 8-cell. It is the 4D analog to the 2D square and the 3D cube. Its 3D "surface" is composed of 8 cubes, which enclose a 4D hypervolume. What is rendered here is not the actual tesseract, but its projection into 3D space in a process similar to photographing a 3D world onto 2D camera film. 
             </div>
             <div class="paragraph">
-                Obviously, we can't directly visualize a tesseract, since we only live in 3 dimensions, so what's displayed is a "photograph" from 4 dimensions onto the 3D "film" of our universe (in the same way we photograph our 3D universe onto the 2D film of a camera). I highly recommend <a href="http://eusebeia.dyndns.org/4d/vis/vis" target="_blank">this site</a> for a primer on visualizing 4D shapes.
+                More information on 4D projections and descriptions of the available controls are provided in <a href="https://github.com/tsherif/tesseract-explorer/blob/master/README.md">the documentation</a>.
             </div>
         </div>
     </div>
@@ -242,6 +242,17 @@
             1, 0,
             1, 1
         ]);
+
+        const UI_CELL_NAME_MAP = {
+            frontX:"Positive X",
+            backX: "Negative X",
+            frontY:"Positive Y",
+            backY: "Negative Y",
+            frontZ:"Positive Z",
+            backZ: "Negative Z",
+            frontW:"Positive W",
+            backW: "Negative W"
+        };
 
         export function createQuad() {
             return {
@@ -1194,14 +1205,14 @@
                     W: 1
                 },
                 visibility: {
-                    frontX: true,
-                    backX: true,
-                    frontY: true,
-                    backY: true,
-                    frontZ: true,
-                    backZ: true,
-                    frontW: true,
-                    backW: true
+                    "Positive X": true,
+                    "Negative X": true,
+                    "Positive Y": true,
+                    "Negative Y": true,
+                    "Positive Z": true,
+                    "Negative Z": true,
+                    "Positive W": true,
+                    "Negative W": true
                 }
             };
                 
@@ -1270,7 +1281,7 @@
             gui.add(settings, "Colorization", ["axis", "cell"]);
             gui.add(settings, "Unfold", 0, 1).step(0.01).onChange(setTransformDirty);
 
-            const rotationFolder = gui.addFolder("Rotations")
+            const rotationFolder = gui.addFolder("Rotate")
             rotationFolder.add(settings.rotations, "XW", 0, 360).onChange(setTransformDirty);
             rotationFolder.add(settings.rotations, "YW", 0, 360).onChange(setTransformDirty);
             rotationFolder.add(settings.rotations, "ZW", 0, 360).onChange(setTransformDirty);
@@ -1286,14 +1297,14 @@
             scaleFolder.add(settings.scales, "W", 0, 1).step(0.01).onChange(setTransformDirty);
 
             const visibilityFolder = gui.addFolder("Cell Visibility");
-            visibilityFolder.add(settings.visibility, "frontX");
-            visibilityFolder.add(settings.visibility, "backX");
-            visibilityFolder.add(settings.visibility, "frontY");
-            visibilityFolder.add(settings.visibility, "backY");
-            visibilityFolder.add(settings.visibility, "frontZ");
-            visibilityFolder.add(settings.visibility, "backZ");
-            visibilityFolder.add(settings.visibility, "frontW");
-            visibilityFolder.add(settings.visibility, "backW");
+            visibilityFolder.add(settings.visibility, "Positive X");
+            visibilityFolder.add(settings.visibility, "Negative X");
+            visibilityFolder.add(settings.visibility, "Positive Y");
+            visibilityFolder.add(settings.visibility, "Negative Y");
+            visibilityFolder.add(settings.visibility, "Positive Z");
+            visibilityFolder.add(settings.visibility, "Negative Z");
+            visibilityFolder.add(settings.visibility, "Positive W");
+            visibilityFolder.add(settings.visibility, "Negative W");
 
             const viewCentroidA = new Float32Array(3);
             const viewCentroidB = new Float32Array(3);
@@ -1331,7 +1342,7 @@
 
                     for (let i = 0; i < objects.length; ++i) {
                         const object = objects[i];
-                        if (settings.visibility[object.direction]) {
+                        if (settings.visibility[UI_CELL_NAME_MAP[object.direction]]) {
                             objects[i].drawCall
                             .uniform("proj", projMatrix)
                             .uniform("view", viewMatrix)
@@ -1357,7 +1368,7 @@
 
                         for (let i = 0; i < objects.length; ++i) {
                             const object = objects[i];
-                            if (settings.visibility[object.direction]) {
+                            if (settings.visibility[UI_CELL_NAME_MAP[object.direction]]) {
                                 app.gl.polygonOffset(i * 0.1, i);
                                 objects[i].shadowDrawCall
                                 .uniform("proj", projMatrix)
@@ -1372,7 +1383,7 @@
 
                     for (let i = 0; i < objects.length; ++i) {
                         const object = objects[i];
-                        if (settings.visibility[object.direction]) {
+                        if (settings.visibility[UI_CELL_NAME_MAP[object.direction]]) {
                             app.gl.polygonOffset(i * 0.1, i);
                             objects[i].opaqueDrawCall
                             .uniform("proj", projMatrix)
