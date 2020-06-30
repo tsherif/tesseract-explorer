@@ -1,0 +1,57 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    overflow-y: hidden;
+    background-color: black;
+}
+
+#info {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    width: 30%;
+    z-index: 999;
+    color: white;
+    padding: 0 10px 10px 10px;
+    font-size: 20px;
+    box-sizing: border-box;
+    pointer-events: none;
+    font-family: 'Lucida Grande', sans-serif;
+}
+
+#info h3 {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font-size: 30px;
+}
+
+#info a {
+    color: white;
+    pointer-events: auto;
+}
+
+#more-info {
+    display: none;
+}
+
+#more-info-button {
+    font-weight: bold;
+    background-color: #1e8eff;
+    color: white;
+    padding: 8px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    display: inline-block;
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+.paragraph {
+    margin-bottom: 10px;
+}
+
+#no-webgl2 {
+    display: none;
+    color: red;
+    font-weight: bold;
+}

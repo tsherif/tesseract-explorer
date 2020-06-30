@@ -2,65 +2,7 @@
 <html>
 <head>
     <title>Tesseract Explorer</title>
-    <style>
-        html, body {
-            height: 100%;
-            margin: 0;
-            overflow-y: hidden;
-            background-color: black;
-        }
-
-        #info {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            width: 30%;
-            z-index: 999;
-            color: white;
-            padding: 0 10px 10px 10px;
-            font-size: 20px;
-            box-sizing: border-box;
-            pointer-events: none;
-            font-family: 'Lucida Grande', sans-serif;
-        }
-
-        #info h3 {
-            margin-top: 10px;
-            margin-bottom: 10px;
-            font-size: 30px;
-        }
-
-        #info a {
-            color: white;
-            pointer-events: auto;
-        }
-
-        #more-info {
-            display: none;
-        }
-
-        #more-info-button {
-            font-weight: bold;
-            background-color: #1e8eff;
-            color: white;
-            padding: 8px;
-            margin-top: 10px;
-            margin-bottom: 10px;
-            display: inline-block;
-            pointer-events: auto;
-            cursor: pointer;
-        }
-
-        .paragraph {
-            margin-bottom: 10px;
-        }
-
-        #no-webgl2 {
-            display: none;
-            color: red;
-            font-weight: bold;
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" href="css/styles.css">
     <script src="lib/gl-matrix.js"></script>
     <script src="lib/picogl.min.js"></script>
     <script src="lib/dat.gui.min.js"></script>
@@ -88,222 +30,316 @@
   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 -->
 <body>
-    <div id="info">
-        <h3>
-            Tesseract Explorer
-        </h3>
+<div id="info">
+    <h3>
+        Tesseract Explorer
+    </h3>
+    <div class="paragraph">
+        By <a href="https://twitter.com/thsherif" target="_blank">Tarek Sherif</a>
+    </div>
+    <div id="no-webgl2" class="paragraph">
+        Oh no! This browser doesn't support WebGL 2! You can read about the tesseract here, but you'll need the latest version of Chrome, Firefox or Edge on desktop or Android to use the Explorer!
+    </div>
+    <div class="paragraph">
+        Welcome to the 4<sup>th</sup> dimension! The controls on the right will manipulate the tesseract in 4D space, and you can manipulate its 3D projection by clicking and dragging with your mouse. To get you started, a favourite view of mine is cutout rendering, orthographic projection, and 45 degree rotations in the XW, YW, ZW planes.
+    </div>
+    <div id="more-info-button">
+        Show Details
+    </div>
+    <div id="more-info">
         <div class="paragraph">
-            By <a href="https://twitter.com/thsherif" target="_blank">Tarek Sherif</a>
-        </div>
-        <div id="no-webgl2" class="paragraph">
-            Oh no! This browser doesn't support WebGL 2! You can read about the tesseract here, but you'll need the latest version of Chrome, Firefox or Edge on desktop or Android to use the Explorer!
+            This is a tesseract, also known as hypercube or an 8-cell. It is the 4D analog to the 2D square and the 3D cube. Its 3D "surface" is composed of 8 cubes, which enclose a 4D hypervolume. What is rendered here is not the actual tesseract, but its projection into 3D space in a process similar to photographing a 3D world onto 2D camera film. 
         </div>
         <div class="paragraph">
-            Welcome to the 4<sup>th</sup> dimension! The controls on the right will manipulate the tesseract in 4D space, and you can manipulate its 3D projection by clicking and dragging with your mouse. To get you started, a favourite view of mine is cutout rendering, orthographic projection, and 45 degree rotations in the XW, YW, ZW planes.
-        </div>
-        <div id="more-info-button">
-            Show Details
-        </div>
-        <div id="more-info">
-            <div class="paragraph">
-                This is a tesseract, also known as hypercube or an 8-cell. It is the 4D analog to the 2D square and the 3D cube. Its 3D "surface" is composed of 8 cubes, which enclose a 4D hypervolume. What is rendered here is not the actual tesseract, but its projection into 3D space in a process similar to photographing a 3D world onto 2D camera film. 
-            </div>
-            <div class="paragraph">
-                More information on 4D projections and descriptions of the available controls are provided in <a href="https://github.com/tsherif/tesseract-explorer/blob/master/README.md#tesseract-explorer" target="_blank">the documentation</a>.
-            </div>
+            More information on 4D projections and descriptions of the available controls are provided in <a href="https://github.com/tsherif/tesseract-explorer/blob/master/README.md#tesseract-explorer" target="_blank">the documentation</a>.
         </div>
     </div>
-    <canvas id="gl-canvas"></canvas>
-    <script type="module">
-        import { webgl2Test } from "./js/utils.js"; 
-        import {
-            createTesseract,
-            createTesseractProjections,
-            createTesseractUVProjections,
-            TESSERACT_BASE_UVS,
-            TESSERACT_UNFOLD_TRANSFORMS
-        } from "./js/tesseract.js";
+</div>
+<canvas id="gl-canvas"></canvas>
+<script type="module">
+    import { webgl2Test } from "./js/utils.js"; 
+    import {
+        createTesseract,
+        createTesseractProjections,
+        createTesseractUVProjections,
+        TESSERACT_BASE_UVS,
+        TESSERACT_UNFOLD_TRANSFORMS
+    } from "./js/tesseract.js";
 
-        import {
-            rotateXY, rotateCellXY,
-            rotateXZ, rotateCellXZ,
-            rotateXW, rotateCellXW,
-            rotateYZ, rotateCellYZ,
-            rotateYW, rotateCellYW,
-            rotateZW, rotateCellZW,
-            scale,
-            unfold,
-            perspectiveProjection,
-            orthographicProjection
-        } from "./js/transform4D.js";
+    import {
+        rotateXY, rotateCellXY,
+        rotateXZ, rotateCellXZ,
+        rotateXW, rotateCellXW,
+        rotateYZ, rotateCellYZ,
+        rotateYW, rotateCellYW,
+        rotateZW, rotateCellZW,
+        scale,
+        unfold,
+        perspectiveProjection,
+        orthographicProjection
+    } from "./js/transform4D.js";
 
-        import {
-            vsTesseract,
-            vsScreenQuad,
-            fsTransparent,
-            fsOpaque,
-            fsShadow,
-            fsOIT
-        } from "./js/shaders.js";
+    import {
+        vsTesseract,
+        vsScreenQuad,
+        fsTransparent,
+        fsOpaque,
+        fsShadow,
+        fsOIT
+    } from "./js/shaders.js";
 
-        import {
-            updateNearFar,
-            orbitCamera,
-            zoomCamera
-        } from "./js/camera-utils.js";
+    import {
+        updateNearFar,
+        orbitCamera,
+        zoomCamera
+    } from "./js/camera-utils.js";
 
-        import { setupInteractions } from "./js/interactions.js";
+    import { setupInteractions } from "./js/interactions.js";
 
-        const moreInfoPanel = document.getElementById("more-info");
-        document.getElementById("more-info-button").addEventListener("click", e => {
-            if (moreInfoPanel.clientWidth === 0) {
-                moreInfoPanel.style.display = "block";
-                e.target.innerText = "Hide Details"
-            } else {
-                moreInfoPanel.style.display = "none"; 
-                e.target.innerText = "Show Details"
+    //////////////////////////
+    // CONSTANTS AND SETTINGS
+    //////////////////////////
+
+    const RADIANS = Math.PI / 180;
+    const FOCAL_LENGTH = 2;
+    const CAMERA_W_OFFSET = 3;
+    const MAX_ZOOM = 7;
+    const MIN_ZOOM = 0.1;
+
+    const COLORS_AXIS = {
+        frontX: new Float32Array([0.86, 0.08, 0.24]),
+        backX: new Float32Array([0.86, 0.08, 0.24]),
+        frontY: new Float32Array([0.2, 0.8, 0.2]),
+        backY: new Float32Array([0.2, 0.8, 0.2]),
+        frontZ: new Float32Array([0.12, 0.56, 1]),
+        backZ: new Float32Array([0.12, 0.56, 1]),
+        frontW: new Float32Array([1, 0.84, 0.01]),
+        backW: new Float32Array([1, 0.84, 0.01])
+    };
+
+    const COLORS_CELL = {
+        frontX: new Float32Array([0.86, 0.08, 0.24]),
+        backX: new Float32Array([0.80, 0.36, 0.36]),
+        frontY: new Float32Array([0.2, 0.8, 0.2]),
+        backY: new Float32Array([0.21, 0.98, 0.80]),
+        frontZ: new Float32Array([0.12, 0.56, 1]),
+        backZ: new Float32Array([0.69, 0.88, 0.90]),
+        frontW: new Float32Array([1, 0.84, 0.01]),
+        backW: new Float32Array([1, 1, 0.5])
+    };
+
+    const QUAD_POSITIONS = new Float32Array([
+        -1, -1,
+        1, -1,
+        -1, 1,
+        1, 1,
+    ]);
+
+    const settings = {
+        projection: "perspective",
+        rendering: "transparent",
+        colorization: "axis",
+        unfold: 0,
+        rotations: {
+            xy: 0,
+            xz: 0,
+            xw: 0,
+            yz: 0,
+            yw: 0,
+            zw: 0
+        },
+        scales: {
+            x: 1,
+            y: 1,
+            z: 1,
+            w: 1
+        },
+        visibility: {
+            "frontX": true,
+            "backX": true,
+            "frontY": true,
+            "backY": true,
+            "frontZ": true,
+            "backZ": true,
+            "frontW": true,
+            "backW": true
+        }
+    };
+
+    let transformDirty = false;
+    const  setTransformDirty = () => { 
+        transformDirty = true; 
+    };
+
+    const gui = new dat.GUI();
+    gui.add(settings, "rendering", ["transparent", "cutout", "solid"]).name("Rendering");
+    gui.add(settings, "projection", ["perspective", "orthographic"]).name("Projection").onChange(setTransformDirty);
+    gui.add(settings, "colorization", ["axis", "cell"]).name("Colorization");
+    gui.add(settings, "unfold", 0, 1).step(0.01).name("Unfold").onChange(setTransformDirty);
+
+    const rotationFolder = gui.addFolder("Rotate")
+    rotationFolder.add(settings.rotations, "xw", 0, 360).name("XW").onChange(setTransformDirty);
+    rotationFolder.add(settings.rotations, "yw", 0, 360).name("YW").onChange(setTransformDirty);
+    rotationFolder.add(settings.rotations, "zw", 0, 360).name("ZW").onChange(setTransformDirty);
+    rotationFolder.add(settings.rotations, "xy", 0, 360).name("XY").onChange(setTransformDirty);
+    rotationFolder.add(settings.rotations, "xz", 0, 360).name("XZ").onChange(setTransformDirty);
+    rotationFolder.add(settings.rotations, "yz", 0, 360).name("YZ").onChange(setTransformDirty);
+    rotationFolder.open();
+
+    const scaleFolder = gui.addFolder("Scale")
+    scaleFolder.add(settings.scales, "x", 0, 1).name("X").step(0.01).onChange(setTransformDirty);
+    scaleFolder.add(settings.scales, "y", 0, 1).name("Y").step(0.01).onChange(setTransformDirty);
+    scaleFolder.add(settings.scales, "z", 0, 1).name("Z").step(0.01).onChange(setTransformDirty);
+    scaleFolder.add(settings.scales, "w", 0, 1).name("W").step(0.01).onChange(setTransformDirty);
+
+    const visibilityFolder = gui.addFolder("Cell Visibility");
+    visibilityFolder.add(settings.visibility, "frontX").name("Positive X");
+    visibilityFolder.add(settings.visibility, "backX").name("Negative X");
+    visibilityFolder.add(settings.visibility, "frontY").name("Positive Y");
+    visibilityFolder.add(settings.visibility, "backY").name("Negative Y");
+    visibilityFolder.add(settings.visibility, "frontZ").name("Positive Z");
+    visibilityFolder.add(settings.visibility, "backZ").name("Negative Z");
+    visibilityFolder.add(settings.visibility, "frontW").name("Positive W");
+    visibilityFolder.add(settings.visibility, "backW").name("Negative W");
+
+    const moreInfoPanel = document.getElementById("more-info");
+    document.getElementById("more-info-button").addEventListener("click", e => {
+        if (moreInfoPanel.clientWidth === 0) {
+            moreInfoPanel.style.display = "block";
+            e.target.innerText = "Hide Details"
+        } else {
+            moreInfoPanel.style.display = "none"; 
+            e.target.innerText = "Show Details"
+        }
+    });
+
+    /////////////
+    // APP SETUP
+    /////////////
+
+    const canvas = document.getElementById("gl-canvas");
+
+    if (!webgl2Test(canvas, ["EXT_color_buffer_float"])) {
+        document.getElementById("no-webgl2").style.display = "block";
+    }
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    
+    const app = PicoGL.createApp(canvas)
+    .clearColor(0.0, 0.0, 0.0, 1.0)
+    .enable(PicoGL.POLYGON_OFFSET_FILL);
+
+    const projMatrixParameters = {
+        fov: Math.PI / 3,
+        aspect: canvas.width / canvas.height,
+        near: 1,
+        far: 10
+    };
+
+    const projMatrix = mat4.perspective(mat4.create(), 
+        projMatrixParameters.fov, 
+        projMatrixParameters.aspect, 
+        projMatrixParameters.near, 
+        projMatrixParameters.far
+    );
+
+    const eye = new Float32Array([-3, 1.5, 5]);
+    const look = new Float32Array([0, 0, 0]);
+    const up = new Float32Array([0, 1, 0]);
+    const viewMatrix = mat4.lookAt(mat4.create(), eye, look, up);
+    const inverseViewMatrix = mat4.invert(mat4.create(), viewMatrix);
+
+    const lightPosition = new Float32Array([2, 2, 0]);
+    const shadowEyePosition = vec3.transformMat4(vec3.create(), lightPosition, inverseViewMatrix);
+    const shadowViewMatrix = mat4.lookAt(mat4.create(), shadowEyePosition, look, up);
+
+    app.createPrograms([vsTesseract, fsTransparent], [vsTesseract, fsOpaque], [vsTesseract, fsShadow], [vsScreenQuad, fsOIT]).then(([transparentProgram, opaqueProgram, shadowProgram, oitProgram]) => {
+        //////////////////////////
+        // OIT FRAMEBUFFERS
+        //////////////////////////
+        const oitTarget = app.createTexture2D(app.width, app.height, { 
+            internalFormat: PicoGL.RGBA16F 
+        });
+
+        const oitAlphaTarget = app.createTexture2D(app.width, app.height, { 
+            internalFormat: PicoGL.RGBA16F 
+        });
+
+        const oitFBO = app.createFramebuffer()
+        .colorTarget(0, oitTarget)
+        .colorTarget(1, oitAlphaTarget);
+
+        ////////////////////////////
+        // SHADOW FRAMEBUFFER
+        ///////////////////////////
+
+        const shadowDepthTarget = app.createTexture2D(app.width, app.height, {
+            internalFormat: PicoGL.DEPTH_COMPONENT32F,
+            compareMode: PicoGL.COMPARE_REF_TO_TEXTURE
+        });
+
+        const shadowBuffer = app.createFramebuffer()
+        .depthTarget(shadowDepthTarget);
+
+        ///////////////////////
+        // GEOMETRY
+        ///////////////////////
+        const tesseract = createTesseract();
+        const uvProjections = createTesseractUVProjections();
+        const transformedTesseractA = createTesseract();
+        const transformedTesseractB = createTesseract();
+        const tesseractProjecton = createTesseractProjections(transformedTesseractA);
+        const sceneBoundary = {
+            min: new Float32Array(3),
+            max: new Float32Array(3)
+        };
+
+        perspectiveProjection(transformedTesseractA, CAMERA_W_OFFSET, FOCAL_LENGTH, tesseractProjecton, uvProjections, sceneBoundary);
+
+        const objects = new Array(8);
+        const uvs = app.createVertexBuffer(PicoGL.FLOAT, 2, TESSERACT_BASE_UVS);
+        ["frontW", "frontX", "frontY", "frontZ", "backX", "backY", "backZ", "backW"].forEach((direction, i) => {
+            const positions = app.createVertexBuffer(PicoGL.FLOAT, 3,  tesseractProjecton[direction]);
+            const uvFactors = app.createVertexBuffer(PicoGL.FLOAT, 1,  uvProjections[direction]);
+            const cellArray = app.createVertexArray()
+            .vertexAttributeBuffer(0, positions)
+            .vertexAttributeBuffer(1, uvs)
+            .vertexAttributeBuffer(2, uvFactors);
+
+            const transparentDrawCall = app.createDrawCall(transparentProgram, cellArray)
+            .uniform("lightPosition", lightPosition);
+
+            const opaqueDrawCall = app.createDrawCall(opaqueProgram, cellArray)
+            .uniform("lightPosition", lightPosition)
+            .texture("shadowMap", shadowDepthTarget);
+
+            const shadowDrawCall = app.createDrawCall(shadowProgram, cellArray);
+
+            objects[i] = {
+                direction,
+                positions,
+                uvFactors,
+                vao: cellArray,
+                transparentDrawCall,
+                opaqueDrawCall,
+                shadowDrawCall
             }
         });
 
-        const RADIANS = Math.PI / 180;
-        const FOCAL_LENGTH = 2;
-        const CAMERA_W_OFFSET = 3;
-        const MAX_ZOOM = 7;
-        const MIN_ZOOM = 0.1;
+        const quadData = QUAD_POSITIONS;
+        const quadPositions = app.createVertexBuffer(PicoGL.FLOAT, 2, quadData);
+        const quadVAO = app.createVertexArray()
+        .vertexAttributeBuffer(0, quadPositions);
 
-        const COLORS_AXIS = {
-            frontX: new Float32Array([0.86, 0.08, 0.24]),
-            backX: new Float32Array([0.86, 0.08, 0.24]),
-            frontY: new Float32Array([0.2, 0.8, 0.2]),
-            backY: new Float32Array([0.2, 0.8, 0.2]),
-            frontZ: new Float32Array([0.12, 0.56, 1]),
-            backZ: new Float32Array([0.12, 0.56, 1]),
-            frontW: new Float32Array([1, 0.84, 0.01]),
-            backW: new Float32Array([1, 0.84, 0.01])
-        };
+        const oitDrawcall = app.createDrawCall(oitProgram, quadVAO)
+        .primitive(PicoGL.TRIANGLE_STRIP)
+        .texture("uAccumulate", oitTarget)
+        .texture("uAccumulateAlpha", oitAlphaTarget);
 
-        const COLORS_CELL = {
-            frontX: new Float32Array([0.86, 0.08, 0.24]),
-            backX: new Float32Array([0.80, 0.36, 0.36]),
-            frontY: new Float32Array([0.2, 0.8, 0.2]),
-            backY: new Float32Array([0.21, 0.98, 0.80]),
-            frontZ: new Float32Array([0.12, 0.56, 1]),
-            backZ: new Float32Array([0.69, 0.88, 0.90]),
-            frontW: new Float32Array([1, 0.84, 0.01]),
-            backW: new Float32Array([1, 1, 0.5])
-        };
-
-        const QUAD_POSITIONS = new Float32Array([
-            -1, -1,
-            1, -1,
-            -1, 1,
-            1, 1,
-        ]);
-
-        const settings = {
-            projection: "perspective",
-            rendering: "transparent",
-            colorization: "axis",
-            unfold: 0,
-            rotations: {
-                xy: 0,
-                xz: 0,
-                xw: 0,
-                yz: 0,
-                yw: 0,
-                zw: 0
-            },
-            scales: {
-                x: 1,
-                y: 1,
-                z: 1,
-                w: 1
-            },
-            visibility: {
-                "frontX": true,
-                "backX": true,
-                "frontY": true,
-                "backY": true,
-                "frontZ": true,
-                "backZ": true,
-                "frontW": true,
-                "backW": true
-            }
-        };
-
-        let transformDirty = false;
-        const  setTransformDirty = () => { 
-            transformDirty = true; 
-        };
-
-        const gui = new dat.GUI();
-        gui.add(settings, "rendering", ["transparent", "cutout", "solid"]).name("Rendering");
-        gui.add(settings, "projection", ["perspective", "orthographic"]).name("Projection").onChange(setTransformDirty);
-        gui.add(settings, "colorization", ["axis", "cell"]).name("Colorization");
-        gui.add(settings, "unfold", 0, 1).step(0.01).name("Unfold").onChange(setTransformDirty);
-
-        const rotationFolder = gui.addFolder("Rotate")
-        rotationFolder.add(settings.rotations, "xw", 0, 360).name("XW").onChange(setTransformDirty);
-        rotationFolder.add(settings.rotations, "yw", 0, 360).name("YW").onChange(setTransformDirty);
-        rotationFolder.add(settings.rotations, "zw", 0, 360).name("ZW").onChange(setTransformDirty);
-        rotationFolder.add(settings.rotations, "xy", 0, 360).name("XY").onChange(setTransformDirty);
-        rotationFolder.add(settings.rotations, "xz", 0, 360).name("XZ").onChange(setTransformDirty);
-        rotationFolder.add(settings.rotations, "yz", 0, 360).name("YZ").onChange(setTransformDirty);
-        rotationFolder.open();
-
-        const scaleFolder = gui.addFolder("Scale")
-        scaleFolder.add(settings.scales, "x", 0, 1).name("X").step(0.01).onChange(setTransformDirty);
-        scaleFolder.add(settings.scales, "y", 0, 1).name("Y").step(0.01).onChange(setTransformDirty);
-        scaleFolder.add(settings.scales, "z", 0, 1).name("Z").step(0.01).onChange(setTransformDirty);
-        scaleFolder.add(settings.scales, "w", 0, 1).name("W").step(0.01).onChange(setTransformDirty);
-
-        const visibilityFolder = gui.addFolder("Cell Visibility");
-        visibilityFolder.add(settings.visibility, "frontX").name("Positive X");
-        visibilityFolder.add(settings.visibility, "backX").name("Negative X");
-        visibilityFolder.add(settings.visibility, "frontY").name("Positive Y");
-        visibilityFolder.add(settings.visibility, "backY").name("Negative Y");
-        visibilityFolder.add(settings.visibility, "frontZ").name("Positive Z");
-        visibilityFolder.add(settings.visibility, "backZ").name("Negative Z");
-        visibilityFolder.add(settings.visibility, "frontW").name("Positive W");
-        visibilityFolder.add(settings.visibility, "backW").name("Negative W");
-
-
-        const canvas = document.getElementById("gl-canvas");
-
-        if (!webgl2Test(canvas, ["EXT_color_buffer_float"])) {
-            document.getElementById("no-webgl2").style.display = "block";
-        }
-
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        
-        const app = PicoGL.createApp(canvas)
-        .clearColor(0.0, 0.0, 0.0, 1.0)
-        .enable(PicoGL.POLYGON_OFFSET_FILL);
-
-        const projMatrixParameters = {
-            fov: Math.PI / 3,
-            aspect: canvas.width / canvas.height,
-            near: 1,
-            far: 10
-        };
-
-        const projMatrix = mat4.perspective(mat4.create(), 
-            projMatrixParameters.fov, 
-            projMatrixParameters.aspect, 
-            projMatrixParameters.near, 
-            projMatrixParameters.far
-        );
-
-        const eye = new Float32Array([-3, 1.5, 5]);
-        const look = new Float32Array([0, 0, 0]);
-        const up = new Float32Array([0, 1, 0]);
-        const viewMatrix = mat4.lookAt(mat4.create(), eye, look, up);
-        const inverseViewMatrix = mat4.invert(mat4.create(), viewMatrix);
-
-        const lightPosition = new Float32Array([2, 2, 0]);
-        const shadowEyePosition = vec3.transformMat4(vec3.create(), lightPosition, inverseViewMatrix);
-        const shadowViewMatrix = mat4.lookAt(mat4.create(), shadowEyePosition, look, up);
+        //////////////////////////////
+        // UI CALLBACKS
+        //////////////////////////////
 
         let zoom = vec3.length(vec3.subtract([], eye, look));
         setupInteractions(canvas, {
@@ -320,259 +356,184 @@
             }
         });
 
-        app.createPrograms([vsTesseract, fsTransparent], [vsTesseract, fsOpaque], [vsTesseract, fsShadow], [vsScreenQuad, fsOIT]).then(([transparentProgram, opaqueProgram, shadowProgram, oitProgram]) => {
-            //////////////////////////
-            // OIT FRAMEBUFFERS
-            //////////////////////////
-            const oitTarget = app.createTexture2D(app.width, app.height, { 
-                internalFormat: PicoGL.RGBA16F 
-            });
+        window.addEventListener("resize", () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
 
-            const oitAlphaTarget = app.createTexture2D(app.width, app.height, { 
-                internalFormat: PicoGL.RGBA16F 
-            });
+            app.resize(canvas.width, canvas.height);
+            oitFBO.resize();
+            shadowBuffer.resize();
+        });
 
-            const oitFBO = app.createFramebuffer()
-            .colorTarget(0, oitTarget)
-            .colorTarget(1, oitAlphaTarget);
+        /////////////////
+        // RENDER LOOP
+        /////////////////
 
-            ////////////////////////////
-            // SHADOW FRAMEBUFFER
-            ///////////////////////////
+        function draw() {
+            const transparent = settings.rendering === "transparent";
+            const cutout = settings.rendering === "cutout";
+            const colors = settings.colorization === "axis" ? COLORS_AXIS : COLORS_CELL;
 
-            const shadowDepthTarget = app.createTexture2D(app.width, app.height, {
-                internalFormat: PicoGL.DEPTH_COMPONENT32F,
-                compareMode: PicoGL.COMPARE_REF_TO_TEXTURE
-            });
+            mat4.lookAt(viewMatrix, eye, look, up);
+            mat4.invert(inverseViewMatrix, viewMatrix);
+            vec3.transformMat4(shadowEyePosition, lightPosition, inverseViewMatrix);
+            mat4.lookAt(shadowViewMatrix, shadowEyePosition, look, up);
 
-            const shadowBuffer = app.createFramebuffer()
-            .depthTarget(shadowDepthTarget);
+            if (transformDirty) {
+                updateTransform(tesseract, transformedTesseractA, transformedTesseractB, tesseractProjecton, uvProjections, objects, settings, sceneBoundary);
+                transformDirty = false;
+            }
 
-            ///////////////////////
-            // GEOMETRY
-            ///////////////////////
-            const tesseract = createTesseract();
-            const uvProjections = createTesseractUVProjections();
-            const transformedTesseractA = createTesseract();
-            const transformedTesseractB = createTesseract();
-            const tesseractProjecton = createTesseractProjections(transformedTesseractA);
-            const sceneBoundary = {
-                min: new Float32Array(3),
-                max: new Float32Array(3)
-            };
+            projMatrixParameters.aspect = canvas.width / canvas.height;
+            updateNearFar(sceneBoundary, [viewMatrix, shadowViewMatrix], projMatrixParameters);
 
-            perspectiveProjection(transformedTesseractA, CAMERA_W_OFFSET, FOCAL_LENGTH, tesseractProjecton, uvProjections, sceneBoundary);
+            mat4.perspective(projMatrix, 
+                projMatrixParameters.fov, 
+                projMatrixParameters.aspect, 
+                projMatrixParameters.near, 
+                projMatrixParameters.far
+            );
 
-            const objects = new Array(8);
-            const uvs = app.createVertexBuffer(PicoGL.FLOAT, 2, TESSERACT_BASE_UVS);
-            ["frontW", "frontX", "frontY", "frontZ", "backX", "backY", "backZ", "backW"].forEach((direction, i) => {
-                const positions = app.createVertexBuffer(PicoGL.FLOAT, 3,  tesseractProjecton[direction]);
-                const uvFactors = app.createVertexBuffer(PicoGL.FLOAT, 1,  uvProjections[direction]);
-                const cellArray = app.createVertexArray()
-                .vertexAttributeBuffer(0, positions)
-                .vertexAttributeBuffer(1, uvs)
-                .vertexAttributeBuffer(2, uvFactors);
+            if (transparent) {
+                app.drawFramebuffer(oitFBO)
+                .disable(PicoGL.DEPTH_TEST)
+                .enable(PicoGL.BLEND)
+                .blendFuncSeparate(PicoGL.ONE, PicoGL.ONE, PicoGL.ZERO, PicoGL.ONE_MINUS_SRC_ALPHA)
+                .clear();
 
-                const transparentDrawCall = app.createDrawCall(transparentProgram, cellArray)
-                .uniform("lightPosition", lightPosition);
-
-                const opaqueDrawCall = app.createDrawCall(opaqueProgram, cellArray)
-                .uniform("lightPosition", lightPosition)
-                .texture("shadowMap", shadowDepthTarget);
-
-                const shadowDrawCall = app.createDrawCall(shadowProgram, cellArray);
-
-                objects[i] = {
-                    direction,
-                    positions,
-                    uvFactors,
-                    vao: cellArray,
-                    transparentDrawCall,
-                    opaqueDrawCall,
-                    shadowDrawCall
-                }
-            });
-
-            const quadData = QUAD_POSITIONS;
-            const quadPositions = app.createVertexBuffer(PicoGL.FLOAT, 2, quadData);
-            const quadVAO = app.createVertexArray()
-            .vertexAttributeBuffer(0, quadPositions);
-
-            const oitDrawcall = app.createDrawCall(oitProgram, quadVAO)
-            .primitive(PicoGL.TRIANGLE_STRIP)
-            .texture("uAccumulate", oitTarget)
-            .texture("uAccumulateAlpha", oitAlphaTarget);
-
-            window.addEventListener("resize", () => {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
-
-                app.resize(canvas.width, canvas.height);
-                oitFBO.resize();
-                shadowBuffer.resize();
-            });
-
-            function draw() {
-                const transparent = settings.rendering === "transparent";
-                const cutout = settings.rendering === "cutout";
-                const colors = settings.colorization === "axis" ? COLORS_AXIS : COLORS_CELL;
-
-                mat4.lookAt(viewMatrix, eye, look, up);
-                mat4.invert(inverseViewMatrix, viewMatrix);
-                vec3.transformMat4(shadowEyePosition, lightPosition, inverseViewMatrix);
-                mat4.lookAt(shadowViewMatrix, shadowEyePosition, look, up);
-
-                if (transformDirty) {
-                    updateTransform(tesseract, transformedTesseractA, transformedTesseractB, tesseractProjecton, uvProjections, objects, settings, sceneBoundary);
-                    transformDirty = false;
+                for (let i = 0; i < objects.length; ++i) {
+                    const object = objects[i];
+                    if (settings.visibility[object.direction]) {
+                        objects[i].transparentDrawCall
+                        .uniform("proj", projMatrix)
+                        .uniform("view", viewMatrix)
+                        .uniform("eyePosition", eye)
+                        .uniform("color", colors[objects[i].direction])
+                        .draw();
+                    }
                 }
 
-                projMatrixParameters.aspect = canvas.width / canvas.height;
-                updateNearFar(sceneBoundary, [viewMatrix, shadowViewMatrix], projMatrixParameters);
+                app.defaultDrawFramebuffer()
+                .blendFunc(PicoGL.ONE, PicoGL.ONE_MINUS_SRC_ALPHA)
+                .clear();
 
-                mat4.perspective(projMatrix, 
-                    projMatrixParameters.fov, 
-                    projMatrixParameters.aspect, 
-                    projMatrixParameters.near, 
-                    projMatrixParameters.far
-                );
+                oitDrawcall.draw();
+            } else {
+                app.enable(PicoGL.DEPTH_TEST)
+                .disable(PicoGL.BLEND)
+                .clear();
 
-                if (transparent) {
-                    app.drawFramebuffer(oitFBO)
-                    .disable(PicoGL.DEPTH_TEST)
-                    .enable(PicoGL.BLEND)
-                    .blendFuncSeparate(PicoGL.ONE, PicoGL.ONE, PicoGL.ZERO, PicoGL.ONE_MINUS_SRC_ALPHA)
+                if (cutout) {
+                    app.drawFramebuffer(shadowBuffer)
                     .clear();
-
-                    for (let i = 0; i < objects.length; ++i) {
-                        const object = objects[i];
-                        if (settings.visibility[object.direction]) {
-                            objects[i].transparentDrawCall
-                            .uniform("proj", projMatrix)
-                            .uniform("view", viewMatrix)
-                            .uniform("eyePosition", eye)
-                            .uniform("color", colors[objects[i].direction])
-                            .draw();
-                        }
-                    }
-
-                    app.defaultDrawFramebuffer()
-                    .blendFunc(PicoGL.ONE, PicoGL.ONE_MINUS_SRC_ALPHA)
-                    .clear();
-
-                    oitDrawcall.draw();
-                } else {
-                    app.enable(PicoGL.DEPTH_TEST)
-                    .disable(PicoGL.BLEND)
-                    .clear();
-
-                    if (cutout) {
-                        app.drawFramebuffer(shadowBuffer)
-                        .clear();
-
-                        for (let i = 0; i < objects.length; ++i) {
-                            const object = objects[i];
-                            if (settings.visibility[object.direction]) {
-                                app.gl.polygonOffset(i * 0.1, i);
-                                objects[i].shadowDrawCall
-                                .uniform("proj", projMatrix)
-                                .uniform("view", shadowViewMatrix)
-                                .uniform("cutout", cutout)
-                                .draw();
-                            }
-                        }
-
-                        app.defaultDrawFramebuffer();
-                    }
 
                     for (let i = 0; i < objects.length; ++i) {
                         const object = objects[i];
                         if (settings.visibility[object.direction]) {
                             app.gl.polygonOffset(i * 0.1, i);
-                            objects[i].opaqueDrawCall
+                            objects[i].shadowDrawCall
                             .uniform("proj", projMatrix)
-                            .uniform("view", viewMatrix)
-                            .uniform("eyePosition", eye)
-                            .uniform("color", colors[objects[i].direction])
+                            .uniform("view", shadowViewMatrix)
                             .uniform("cutout", cutout)
-                            .uniform("shadowView", shadowViewMatrix)
                             .draw();
                         }
                     }
+
+                    app.defaultDrawFramebuffer();
                 }
-                
-                requestAnimationFrame(draw);
-            }
 
+                for (let i = 0; i < objects.length; ++i) {
+                    const object = objects[i];
+                    if (settings.visibility[object.direction]) {
+                        app.gl.polygonOffset(i * 0.1, i);
+                        objects[i].opaqueDrawCall
+                        .uniform("proj", projMatrix)
+                        .uniform("view", viewMatrix)
+                        .uniform("eyePosition", eye)
+                        .uniform("color", colors[objects[i].direction])
+                        .uniform("cutout", cutout)
+                        .uniform("shadowView", shadowViewMatrix)
+                        .draw();
+                    }
+                }
+            }
+            
             requestAnimationFrame(draw);
-        });
+        }
 
-        function updateTransform(tesseract, transformedTesseractA, transformedTesseractB, tesseractProjecton, uvProjections, objects, settings, sceneBoundary) {
+        requestAnimationFrame(draw);
+    });
 
-            const {rotations, scales} = settings;
+    ////////////////////////
+    // 4D TRANSFORM HELPER
+    ////////////////////////
 
-            let inTesseract = tesseract;
-            let outTesseract = transformedTesseractA;
+    function updateTransform(tesseract, transformedTesseractA, transformedTesseractB, tesseractProjecton, uvProjections, objects, settings, sceneBoundary) {
 
-            if (settings.unfold > 0) {
-                unfold(inTesseract, TESSERACT_UNFOLD_TRANSFORMS, settings.unfold, outTesseract);
-                inTesseract = outTesseract;
-                outTesseract = inTesseract === transformedTesseractA ? transformedTesseractB : transformedTesseractA;
-            }
+        const {rotations, scales} = settings;
 
-            scale(inTesseract, scales, outTesseract);
+        let inTesseract = tesseract;
+        let outTesseract = transformedTesseractA;
+
+        if (settings.unfold > 0) {
+            unfold(inTesseract, TESSERACT_UNFOLD_TRANSFORMS, settings.unfold, outTesseract);
             inTesseract = outTesseract;
             outTesseract = inTesseract === transformedTesseractA ? transformedTesseractB : transformedTesseractA;
-
-            if (rotations.xy !== 0) {
-                rotateXY(inTesseract, rotations.xy * RADIANS, outTesseract);
-                inTesseract = outTesseract;
-                outTesseract = inTesseract === transformedTesseractA ? transformedTesseractB : transformedTesseractA;
-            }
-
-            if (rotations.xz !== 0) {
-                rotateXZ(inTesseract, rotations.xz * RADIANS, outTesseract);
-                inTesseract = outTesseract;
-                outTesseract = inTesseract === transformedTesseractA ? transformedTesseractB : transformedTesseractA;
-            }
-
-            if (rotations.xw !== 0) {
-                rotateXW(inTesseract, rotations.xw * RADIANS, outTesseract);
-                inTesseract = outTesseract;
-                outTesseract = inTesseract === transformedTesseractA ? transformedTesseractB : transformedTesseractA;
-            }
-
-            if (rotations.yz !== 0) {
-                rotateYZ(inTesseract, rotations.yz * RADIANS, outTesseract);
-                inTesseract = outTesseract;
-                outTesseract = inTesseract === transformedTesseractA ? transformedTesseractB : transformedTesseractA;
-            }
-
-            if (rotations.yw !== 0) {
-                rotateYW(inTesseract, rotations.yw * RADIANS, outTesseract);
-                inTesseract = outTesseract;
-                outTesseract = inTesseract === transformedTesseractA ? transformedTesseractB : transformedTesseractA;
-            }
-
-            if (rotations.zw !== 0) {
-                rotateZW(inTesseract, rotations.zw * RADIANS, outTesseract);
-                inTesseract = outTesseract;
-                outTesseract = inTesseract === transformedTesseractA ? transformedTesseractB : transformedTesseractA;
-            }
-
-            if (settings.projection === "perspective") {
-                perspectiveProjection(inTesseract, CAMERA_W_OFFSET, FOCAL_LENGTH, tesseractProjecton, uvProjections, sceneBoundary);
-            } else {
-                orthographicProjection(inTesseract, tesseractProjecton, uvProjections, sceneBoundary);
-            }
-            for (let i = 0; i < objects.length; ++i) {
-                let object = objects[i];
-                let direction = object.direction;
-                object.positions.data(tesseractProjecton[direction]);
-                object.uvFactors.data(uvProjections[direction]);
-            }
         }
-        
-    </script>
+
+        scale(inTesseract, scales, outTesseract);
+        inTesseract = outTesseract;
+        outTesseract = inTesseract === transformedTesseractA ? transformedTesseractB : transformedTesseractA;
+
+        if (rotations.xy !== 0) {
+            rotateXY(inTesseract, rotations.xy * RADIANS, outTesseract);
+            inTesseract = outTesseract;
+            outTesseract = inTesseract === transformedTesseractA ? transformedTesseractB : transformedTesseractA;
+        }
+
+        if (rotations.xz !== 0) {
+            rotateXZ(inTesseract, rotations.xz * RADIANS, outTesseract);
+            inTesseract = outTesseract;
+            outTesseract = inTesseract === transformedTesseractA ? transformedTesseractB : transformedTesseractA;
+        }
+
+        if (rotations.xw !== 0) {
+            rotateXW(inTesseract, rotations.xw * RADIANS, outTesseract);
+            inTesseract = outTesseract;
+            outTesseract = inTesseract === transformedTesseractA ? transformedTesseractB : transformedTesseractA;
+        }
+
+        if (rotations.yz !== 0) {
+            rotateYZ(inTesseract, rotations.yz * RADIANS, outTesseract);
+            inTesseract = outTesseract;
+            outTesseract = inTesseract === transformedTesseractA ? transformedTesseractB : transformedTesseractA;
+        }
+
+        if (rotations.yw !== 0) {
+            rotateYW(inTesseract, rotations.yw * RADIANS, outTesseract);
+            inTesseract = outTesseract;
+            outTesseract = inTesseract === transformedTesseractA ? transformedTesseractB : transformedTesseractA;
+        }
+
+        if (rotations.zw !== 0) {
+            rotateZW(inTesseract, rotations.zw * RADIANS, outTesseract);
+            inTesseract = outTesseract;
+            outTesseract = inTesseract === transformedTesseractA ? transformedTesseractB : transformedTesseractA;
+        }
+
+        if (settings.projection === "perspective") {
+            perspectiveProjection(inTesseract, CAMERA_W_OFFSET, FOCAL_LENGTH, tesseractProjecton, uvProjections, sceneBoundary);
+        } else {
+            orthographicProjection(inTesseract, tesseractProjecton, uvProjections, sceneBoundary);
+        }
+        for (let i = 0; i < objects.length; ++i) {
+            let object = objects[i];
+            let direction = object.direction;
+            object.positions.data(tesseractProjecton[direction]);
+            object.uvFactors.data(uvProjections[direction]);
+        }
+    }
+    
+</script>
 </body>
 </html>
