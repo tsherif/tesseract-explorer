@@ -108,29 +108,29 @@
     const MAX_ZOOM = 7;
     const MIN_ZOOM = 0.1;
 
-    // FOR OIT
+    // To reduce aliasing in OIT
     const SSAA_MULTIPLIER = 2;
 
     const COLORS_AXIS = {
-        frontX: new Float32Array([0.86, 0.08, 0.24]),
-        backX: new Float32Array([0.86, 0.08, 0.24]),
-        frontY: new Float32Array([0.2, 0.8, 0.2]),
-        backY: new Float32Array([0.2, 0.8, 0.2]),
-        frontZ: new Float32Array([0.12, 0.56, 1]),
-        backZ: new Float32Array([0.12, 0.56, 1]),
-        frontW: new Float32Array([1, 0.84, 0.01]),
-        backW: new Float32Array([1, 0.84, 0.01])
+        posX: new Float32Array([0.86, 0.08, 0.24]),
+        negX: new Float32Array([0.86, 0.08, 0.24]),
+        posY: new Float32Array([0.2, 0.8, 0.2]),
+        negY: new Float32Array([0.2, 0.8, 0.2]),
+        posZ: new Float32Array([0.12, 0.56, 1]),
+        negZ: new Float32Array([0.12, 0.56, 1]),
+        posW: new Float32Array([1, 0.84, 0.01]),
+        negW: new Float32Array([1, 0.84, 0.01])
     };
 
     const COLORS_CELL = {
-        frontX: new Float32Array([0.86, 0.08, 0.24]),
-        backX: new Float32Array([0.80, 0.36, 0.36]),
-        frontY: new Float32Array([0.2, 0.8, 0.2]),
-        backY: new Float32Array([0.21, 0.98, 0.80]),
-        frontZ: new Float32Array([0.12, 0.56, 1]),
-        backZ: new Float32Array([0.69, 0.88, 0.90]),
-        frontW: new Float32Array([1, 0.84, 0.01]),
-        backW: new Float32Array([1, 1, 0.5])
+        posX: new Float32Array([0.86, 0.08, 0.24]),
+        negX: new Float32Array([0.80, 0.36, 0.36]),
+        posY: new Float32Array([0.2, 0.8, 0.2]),
+        negY: new Float32Array([0.21, 0.98, 0.80]),
+        posZ: new Float32Array([0.12, 0.56, 1]),
+        negZ: new Float32Array([0.69, 0.88, 0.90]),
+        posW: new Float32Array([1, 0.84, 0.01]),
+        negW: new Float32Array([1, 1, 0.5])
     };
 
     const QUAD_POSITIONS = new Float32Array([
@@ -160,14 +160,14 @@
             w: 1
         },
         visibility: {
-            "frontX": true,
-            "backX": true,
-            "frontY": true,
-            "backY": true,
-            "frontZ": true,
-            "backZ": true,
-            "frontW": true,
-            "backW": true
+            "posX": true,
+            "negX": true,
+            "posY": true,
+            "negY": true,
+            "posZ": true,
+            "negZ": true,
+            "posW": true,
+            "negW": true
         }
     };
 
@@ -198,14 +198,14 @@
     scaleFolder.add(settings.scales, "w", 0, 1).name("W").step(0.01).onChange(setTransformDirty);
 
     const visibilityFolder = gui.addFolder("Cell Visibility");
-    visibilityFolder.add(settings.visibility, "frontX").name("Positive X");
-    visibilityFolder.add(settings.visibility, "backX").name("Negative X");
-    visibilityFolder.add(settings.visibility, "frontY").name("Positive Y");
-    visibilityFolder.add(settings.visibility, "backY").name("Negative Y");
-    visibilityFolder.add(settings.visibility, "frontZ").name("Positive Z");
-    visibilityFolder.add(settings.visibility, "backZ").name("Negative Z");
-    visibilityFolder.add(settings.visibility, "frontW").name("Positive W");
-    visibilityFolder.add(settings.visibility, "backW").name("Negative W");
+    visibilityFolder.add(settings.visibility, "posX").name("Positive X");
+    visibilityFolder.add(settings.visibility, "negX").name("Negative X");
+    visibilityFolder.add(settings.visibility, "posY").name("Positive Y");
+    visibilityFolder.add(settings.visibility, "negY").name("Negative Y");
+    visibilityFolder.add(settings.visibility, "posZ").name("Positive Z");
+    visibilityFolder.add(settings.visibility, "negZ").name("Negative Z");
+    visibilityFolder.add(settings.visibility, "posW").name("Positive W");
+    visibilityFolder.add(settings.visibility, "negW").name("Negative W");
 
     const moreInfoPanel = document.getElementById("more-info");
     document.getElementById("more-info-button").addEventListener("click", e => {
@@ -309,7 +309,7 @@
 
         const objects = new Array(8);
         const uvs = app.createVertexBuffer(PicoGL.FLOAT, 2, TESSERACT_BASE_UVS);
-        ["frontW", "frontX", "frontY", "frontZ", "backX", "backY", "backZ", "backW"].forEach((direction, i) => {
+        ["posW", "posX", "posY", "posZ", "negX", "negY", "negZ", "negW"].forEach((direction, i) => {
             const positions = app.createVertexBuffer(PicoGL.FLOAT, 3,  tesseractProjecton[direction]);
             const uvFactors = app.createVertexBuffer(PicoGL.FLOAT, 1,  uvProjections[direction]);
             

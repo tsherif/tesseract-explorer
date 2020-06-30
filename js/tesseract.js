@@ -23,28 +23,28 @@
 
 export function createTesseract() {
     return {
-        frontX: createCube4D([1, 2, 3, 0], 1),
-        backX:  createCube4D([1, 2, 3, 0], -1),
-        frontY: createCube4D([2, 3, 0, 1], 1),
-        backY:  createCube4D([2, 3, 0, 1], -1),
-        frontZ: createCube4D([3, 0, 1, 2], 1),
-        backZ:  createCube4D([3, 0, 1, 2], -1),
-        frontW: createCube4D([0, 1, 2, 3], 1),
-        backW:  createCube4D([0, 1, 2, 3], -1)
+        posX: createCube4D([1, 2, 3, 0], 1),
+        negX:  createCube4D([1, 2, 3, 0], -1),
+        posY: createCube4D([2, 3, 0, 1], 1),
+        negY:  createCube4D([2, 3, 0, 1], -1),
+        posZ: createCube4D([3, 0, 1, 2], 1),
+        negZ:  createCube4D([3, 0, 1, 2], -1),
+        posW: createCube4D([0, 1, 2, 3], 1),
+        negW:  createCube4D([0, 1, 2, 3], -1)
     };
 }
 
 export function createTesseractUVProjections() {
     // Projection depth factors
     return {
-        frontX: new Float32Array(36),
-        backX:  new Float32Array(36),
-        frontY: new Float32Array(36),
-        backY:  new Float32Array(36),
-        frontZ: new Float32Array(36),
-        backZ:  new Float32Array(36),
-        frontW: new Float32Array(36),
-        backW:  new Float32Array(36)
+        posX: new Float32Array(36),
+        negX:  new Float32Array(36),
+        posY: new Float32Array(36),
+        negY:  new Float32Array(36),
+        posZ: new Float32Array(36),
+        negZ:  new Float32Array(36),
+        posW: new Float32Array(36),
+        negW:  new Float32Array(36)
     };
 }
 
@@ -108,40 +108,40 @@ export const TESSERACT_BASE_UVS = new Float32Array([
 ]);
 
 export const TESSERACT_UNFOLD_TRANSFORMS = {
-    frontX: {
+    posX: {
         rotationPlane: "xw",
         rotationAngle: -Math.PI * 0.5,
         translation: [2, 0, 0, 1]
     },
-    backX: {
+    negX: {
         rotationPlane: "xw",
         rotationAngle: Math.PI * 0.5,
         translation: [-2, 0, 0, 1]
     },
-    frontY: {
+    posY: {
         rotationPlane: "yw",
         rotationAngle: -Math.PI * 0.5,
         translation: [0, 2, 0, 1]
     },
-    backY: {
+    negY: {
         rotationPlane: "yw",
         rotationAngle: Math.PI * 0.5,
         translation: [0, -2, 0, 1]
     },
-    frontZ: {
+    posZ: {
         rotationPlane: "zw",
         rotationAngle: -Math.PI * 0.5,
         translation: [0, 0, 2, 1]
     },
-    backZ: {
+    negZ: {
         rotationPlane: "zw",
         rotationAngle: Math.PI * 0.5,
         translation: [0, 0, -2, 1]
     },
-    frontW: {
+    posW: {
         translation: [0, 0, 4, -1]
     },
-    backW: {
+    negW: {
         translation: [0, 0, 0, 1]
     },
 
