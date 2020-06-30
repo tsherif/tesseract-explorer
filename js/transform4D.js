@@ -115,10 +115,7 @@ export function rotateCellZW(cell, angle, out) {
 }
 
 export function scale(tesseract, scales, out) {
-    const x = scales.X;
-    const y = scales.Y;
-    const z = scales.Z;
-    const w = scales.W;
+    const {x, y, z, w} = scales;
 
     for (const direction in tesseract) {
         const cell = tesseract[direction];
@@ -142,13 +139,13 @@ export function unfold(tesseract, unfoldTransforms, factor, out) {
         const {rotationPlane, rotationAngle = 0, translation = [0, 0, 0, 0]} = unfoldTransforms[direction];
 
         switch(rotationPlane) {
-            case "XW": 
+            case "xw": 
                 rotateCellXW(cellIn, factor * rotationAngle, cellOut);
                 break;
-            case "YW": 
+            case "yw": 
                 rotateCellYW(cellIn, factor * rotationAngle, cellOut);
                 break;
-            case "ZW": 
+            case "zw": 
                 rotateCellZW(cellIn, factor * rotationAngle, cellOut);
                 break;
             default:

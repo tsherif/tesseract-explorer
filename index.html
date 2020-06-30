@@ -193,17 +193,6 @@
             backW: new Float32Array([1, 1, 0.5])
         };
 
-        const UI_CELL_NAME_MAP = {
-            frontX:"Positive X",
-            backX: "Negative X",
-            frontY:"Positive Y",
-            backY: "Negative Y",
-            frontZ:"Positive Z",
-            backZ: "Negative Z",
-            frontW:"Positive W",
-            backW: "Negative W"
-        };
-
         const QUAD_POSITIONS = new Float32Array([
             -1, -1,
             1, -1,
@@ -212,33 +201,33 @@
         ]);
 
         const settings = {
-            Projection: "perspective",
-            Rendering: "transparent",
-            Colorization: "axis",
-            Unfold: 0,
+            projection: "perspective",
+            rendering: "transparent",
+            colorization: "axis",
+            unfold: 0,
             rotations: {
-                XY: 0,
-                XZ: 0,
-                XW: 0,
-                YZ: 0,
-                YW: 0,
-                ZW: 0
+                xy: 0,
+                xz: 0,
+                xw: 0,
+                yz: 0,
+                yw: 0,
+                zw: 0
             },
             scales: {
-                X: 1,
-                Y: 1,
-                Z: 1,
-                W: 1
+                x: 1,
+                y: 1,
+                z: 1,
+                w: 1
             },
             visibility: {
-                "Positive X": true,
-                "Negative X": true,
-                "Positive Y": true,
-                "Negative Y": true,
-                "Positive Z": true,
-                "Negative Z": true,
-                "Positive W": true,
-                "Negative W": true
+                "frontX": true,
+                "backX": true,
+                "frontY": true,
+                "backY": true,
+                "frontZ": true,
+                "backZ": true,
+                "frontW": true,
+                "backW": true
             }
         };
 
@@ -248,35 +237,35 @@
         };
 
         const gui = new dat.GUI();
-        gui.add(settings, "Rendering", ["transparent", "cutout", "solid"]);
-        gui.add(settings, "Projection", ["perspective", "orthographic"]).onChange(setTransformDirty);
-        gui.add(settings, "Colorization", ["axis", "cell"]);
-        gui.add(settings, "Unfold", 0, 1).step(0.01).onChange(setTransformDirty);
+        gui.add(settings, "rendering", ["transparent", "cutout", "solid"]).name("Rendering");
+        gui.add(settings, "projection", ["perspective", "orthographic"]).name("Projection").onChange(setTransformDirty);
+        gui.add(settings, "colorization", ["axis", "cell"]).name("Colorization");
+        gui.add(settings, "unfold", 0, 1).step(0.01).name("Unfold").onChange(setTransformDirty);
 
         const rotationFolder = gui.addFolder("Rotate")
-        rotationFolder.add(settings.rotations, "XW", 0, 360).onChange(setTransformDirty);
-        rotationFolder.add(settings.rotations, "YW", 0, 360).onChange(setTransformDirty);
-        rotationFolder.add(settings.rotations, "ZW", 0, 360).onChange(setTransformDirty);
-        rotationFolder.add(settings.rotations, "XY", 0, 360).onChange(setTransformDirty);
-        rotationFolder.add(settings.rotations, "XZ", 0, 360).onChange(setTransformDirty);
-        rotationFolder.add(settings.rotations, "YZ", 0, 360).onChange(setTransformDirty);
+        rotationFolder.add(settings.rotations, "xw", 0, 360).name("XW").onChange(setTransformDirty);
+        rotationFolder.add(settings.rotations, "yw", 0, 360).name("YW").onChange(setTransformDirty);
+        rotationFolder.add(settings.rotations, "zw", 0, 360).name("ZW").onChange(setTransformDirty);
+        rotationFolder.add(settings.rotations, "xy", 0, 360).name("XY").onChange(setTransformDirty);
+        rotationFolder.add(settings.rotations, "xz", 0, 360).name("XZ").onChange(setTransformDirty);
+        rotationFolder.add(settings.rotations, "yz", 0, 360).name("YZ").onChange(setTransformDirty);
         rotationFolder.open();
 
         const scaleFolder = gui.addFolder("Scale")
-        scaleFolder.add(settings.scales, "X", 0, 1).step(0.01).onChange(setTransformDirty);
-        scaleFolder.add(settings.scales, "Y", 0, 1).step(0.01).onChange(setTransformDirty);
-        scaleFolder.add(settings.scales, "Z", 0, 1).step(0.01).onChange(setTransformDirty);
-        scaleFolder.add(settings.scales, "W", 0, 1).step(0.01).onChange(setTransformDirty);
+        scaleFolder.add(settings.scales, "x", 0, 1).name("X").step(0.01).onChange(setTransformDirty);
+        scaleFolder.add(settings.scales, "y", 0, 1).name("Y").step(0.01).onChange(setTransformDirty);
+        scaleFolder.add(settings.scales, "z", 0, 1).name("Z").step(0.01).onChange(setTransformDirty);
+        scaleFolder.add(settings.scales, "w", 0, 1).name("W").step(0.01).onChange(setTransformDirty);
 
         const visibilityFolder = gui.addFolder("Cell Visibility");
-        visibilityFolder.add(settings.visibility, "Positive X");
-        visibilityFolder.add(settings.visibility, "Negative X");
-        visibilityFolder.add(settings.visibility, "Positive Y");
-        visibilityFolder.add(settings.visibility, "Negative Y");
-        visibilityFolder.add(settings.visibility, "Positive Z");
-        visibilityFolder.add(settings.visibility, "Negative Z");
-        visibilityFolder.add(settings.visibility, "Positive W");
-        visibilityFolder.add(settings.visibility, "Negative W");
+        visibilityFolder.add(settings.visibility, "frontX").name("Positive X");
+        visibilityFolder.add(settings.visibility, "backX").name("Negative X");
+        visibilityFolder.add(settings.visibility, "frontY").name("Positive Y");
+        visibilityFolder.add(settings.visibility, "backY").name("Negative Y");
+        visibilityFolder.add(settings.visibility, "frontZ").name("Positive Z");
+        visibilityFolder.add(settings.visibility, "backZ").name("Negative Z");
+        visibilityFolder.add(settings.visibility, "frontW").name("Positive W");
+        visibilityFolder.add(settings.visibility, "backW").name("Negative W");
 
 
         const canvas = document.getElementById("gl-canvas");
@@ -403,7 +392,7 @@
                     shadowDrawCall
                 }
             });
-            
+
             const quadData = QUAD_POSITIONS;
             const quadPositions = app.createVertexBuffer(PicoGL.FLOAT, 2, quadData);
             const quadVAO = app.createVertexArray()
@@ -424,9 +413,9 @@
             });
 
             function draw() {
-                const transparent = settings.Rendering === "transparent";
-                const cutout = settings.Rendering === "cutout";
-                const colors = settings.Colorization === "axis" ? COLORS_AXIS : COLORS_CELL;
+                const transparent = settings.rendering === "transparent";
+                const cutout = settings.rendering === "cutout";
+                const colors = settings.colorization === "axis" ? COLORS_AXIS : COLORS_CELL;
 
                 mat4.lookAt(viewMatrix, eye, look, up);
                 mat4.invert(inverseViewMatrix, viewMatrix);
@@ -457,7 +446,7 @@
 
                     for (let i = 0; i < objects.length; ++i) {
                         const object = objects[i];
-                        if (settings.visibility[UI_CELL_NAME_MAP[object.direction]]) {
+                        if (settings.visibility[object.direction]) {
                             objects[i].transparentDrawCall
                             .uniform("proj", projMatrix)
                             .uniform("view", viewMatrix)
@@ -483,7 +472,7 @@
 
                         for (let i = 0; i < objects.length; ++i) {
                             const object = objects[i];
-                            if (settings.visibility[UI_CELL_NAME_MAP[object.direction]]) {
+                            if (settings.visibility[object.direction]) {
                                 app.gl.polygonOffset(i * 0.1, i);
                                 objects[i].shadowDrawCall
                                 .uniform("proj", projMatrix)
@@ -498,7 +487,7 @@
 
                     for (let i = 0; i < objects.length; ++i) {
                         const object = objects[i];
-                        if (settings.visibility[UI_CELL_NAME_MAP[object.direction]]) {
+                        if (settings.visibility[object.direction]) {
                             app.gl.polygonOffset(i * 0.1, i);
                             objects[i].opaqueDrawCall
                             .uniform("proj", projMatrix)
@@ -520,13 +509,13 @@
 
         function updateTransform(tesseract, transformedTesseractA, transformedTesseractB, tesseractProjecton, uvProjections, objects, settings, sceneBoundary) {
 
-            const {Unfold, rotations, scales} = settings;
+            const {rotations, scales} = settings;
 
             let inTesseract = tesseract;
             let outTesseract = transformedTesseractA;
 
-            if (Unfold > 0) {
-                unfold(inTesseract, TESSERACT_UNFOLD_TRANSFORMS, Unfold, outTesseract);
+            if (settings.unfold > 0) {
+                unfold(inTesseract, TESSERACT_UNFOLD_TRANSFORMS, settings.unfold, outTesseract);
                 inTesseract = outTesseract;
                 outTesseract = inTesseract === transformedTesseractA ? transformedTesseractB : transformedTesseractA;
             }
@@ -535,43 +524,43 @@
             inTesseract = outTesseract;
             outTesseract = inTesseract === transformedTesseractA ? transformedTesseractB : transformedTesseractA;
 
-            if (rotations.XY !== 0) {
-                rotateXY(inTesseract, rotations.XY * RADIANS, outTesseract);
+            if (rotations.xy !== 0) {
+                rotateXY(inTesseract, rotations.xy * RADIANS, outTesseract);
                 inTesseract = outTesseract;
                 outTesseract = inTesseract === transformedTesseractA ? transformedTesseractB : transformedTesseractA;
             }
 
-            if (rotations.XZ !== 0) {
-                rotateXZ(inTesseract, rotations.XZ * RADIANS, outTesseract);
+            if (rotations.xz !== 0) {
+                rotateXZ(inTesseract, rotations.xz * RADIANS, outTesseract);
                 inTesseract = outTesseract;
                 outTesseract = inTesseract === transformedTesseractA ? transformedTesseractB : transformedTesseractA;
             }
 
-            if (rotations.XW !== 0) {
-                rotateXW(inTesseract, rotations.XW * RADIANS, outTesseract);
+            if (rotations.xw !== 0) {
+                rotateXW(inTesseract, rotations.xw * RADIANS, outTesseract);
                 inTesseract = outTesseract;
                 outTesseract = inTesseract === transformedTesseractA ? transformedTesseractB : transformedTesseractA;
             }
 
-            if (rotations.YZ !== 0) {
-                rotateYZ(inTesseract, rotations.YZ * RADIANS, outTesseract);
+            if (rotations.yz !== 0) {
+                rotateYZ(inTesseract, rotations.yz * RADIANS, outTesseract);
                 inTesseract = outTesseract;
                 outTesseract = inTesseract === transformedTesseractA ? transformedTesseractB : transformedTesseractA;
             }
 
-            if (rotations.YW !== 0) {
-                rotateYW(inTesseract, rotations.YW * RADIANS, outTesseract);
+            if (rotations.yw !== 0) {
+                rotateYW(inTesseract, rotations.yw * RADIANS, outTesseract);
                 inTesseract = outTesseract;
                 outTesseract = inTesseract === transformedTesseractA ? transformedTesseractB : transformedTesseractA;
             }
 
-            if (rotations.ZW !== 0) {
-                rotateZW(inTesseract, rotations.ZW * RADIANS, outTesseract);
+            if (rotations.zw !== 0) {
+                rotateZW(inTesseract, rotations.zw * RADIANS, outTesseract);
                 inTesseract = outTesseract;
                 outTesseract = inTesseract === transformedTesseractA ? transformedTesseractB : transformedTesseractA;
             }
 
-            if (settings.Projection === "perspective") {
+            if (settings.projection === "perspective") {
                 perspectiveProjection(inTesseract, CAMERA_W_OFFSET, FOCAL_LENGTH, tesseractProjecton, uvProjections, sceneBoundary);
             } else {
                 orthographicProjection(inTesseract, tesseractProjecton, uvProjections, sceneBoundary);

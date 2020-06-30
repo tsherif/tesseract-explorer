@@ -87,32 +87,32 @@ export const TESSERACT_BASE_UVS = new Float32Array([
 
 export const TESSERACT_UNFOLD_TRANSFORMS = {
     frontX: {
-        rotationPlane: "XW",
+        rotationPlane: "xw",
         rotationAngle: -Math.PI * 0.5,
         translation: [2, 0, 0, 1]
     },
     backX: {
-        rotationPlane: "XW",
+        rotationPlane: "xw",
         rotationAngle: Math.PI * 0.5,
         translation: [-2, 0, 0, 1]
     },
     frontY: {
-        rotationPlane: "YW",
+        rotationPlane: "yw",
         rotationAngle: -Math.PI * 0.5,
         translation: [0, 2, 0, 1]
     },
     backY: {
-        rotationPlane: "YW",
+        rotationPlane: "yw",
         rotationAngle: Math.PI * 0.5,
         translation: [0, -2, 0, 1]
     },
     frontZ: {
-        rotationPlane: "ZW",
+        rotationPlane: "zw",
         rotationAngle: -Math.PI * 0.5,
         translation: [0, 0, 2, 1]
     },
     backZ: {
-        rotationPlane: "ZW",
+        rotationPlane: "zw",
         rotationAngle: Math.PI * 0.5,
         translation: [0, 0, -2, 1]
     },
