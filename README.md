@@ -20,17 +20,17 @@ The 3D projection of the tesseract can be explored using the mouse. Click and dr
 ### Control Panel Options
 
 - **Rendering**:
-    - Transparent: Transparent rendering of the projection.
-    - Cutout: Opaque rendering of the projection with holes cut out of each face to expose the internal cells.
-    - Solid: Opaque rendering of the projection. 
+    - `transparent`: Transparent rendering of the projection.
+    - `cutout`: Opaque rendering of the projection with holes cut out of each face to expose the internal cells.
+    - `solid`: Opaque rendering of the projection. 
 
 - **Projection**:
-    - Perspective: A "camera" in 4D space is placed at some distance from the origin along the W-axis. Cells further from camera project to smaller cubes than nearer cells. Cells at an angle to the hyperplane of projection appear as distorted cubes (or [frustums](https://en.wikipedia.org/wiki/Frustum)).
-    - Orthographic: Projection flattens the 4D scene to 3D without any scaling due to distance. A cell-first view of a tesseract will project orthographically to a 3D cube.
+    - `perspective`: A "camera" in 4D space is placed at some distance from the origin along the W-axis. Cells further from camera project to smaller cubes than nearer cells. Cells at an angle to the hyperplane of projection appear as distorted cubes (or [frustums](https://en.wikipedia.org/wiki/Frustum)).
+    - `orthographic`: Projection flattens the 4D scene to 3D without any scaling due to distance. A cell-first view of a tesseract will project orthographically to a 3D cube.
 
 - **Colorization**:
-    - Axis: Cells are colored by axis, with the X-axis pair colored red, the Y-axis pair colored green, the Z-axis pair colored blue, and W-axis pair colored yellow.
-    - Cell: Each cell is colored separately. The coloring of the pair of cells on an axis will be light and dark shades of their axis coloring, with the positive cell having the darker shade and the negative cell, the lighter one.
+    - `axis`: Cells are colored by axis, with the X-axis pair colored red, the Y-axis pair colored green, the Z-axis pair colored blue, and W-axis pair colored yellow.
+    - `cell`: Each cell is colored separately. The coloring of the pair of cells on an axis will be light and dark shades of their axis coloring, with the positive cell having the darker shade and the negative cell, the lighter one.
 
 - **Unfold**: Rotate the cells of the tesseract into 3D space in the form of a [Dalí cross](https://en.wikipedia.org/wiki/Polycube#Octacubes_and_hypercube_unfoldings).
 
@@ -39,6 +39,7 @@ The 3D projection of the tesseract can be explored using the mouse. Click and dr
 - **Scale**: Scale the tesseract along any of the 4 axes in 4D space. Scaling shows a sweep across the 4D hypervolume (in the same way scaling a 3D cube along one axis shows the sweep across its internal 3D volume).
 
 - **Cell Visibility**: Hide or show individual cells. This can make it easier to follow certain transformations.
+
 
 ## Other Resources
 
