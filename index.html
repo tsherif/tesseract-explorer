@@ -147,6 +147,9 @@
         1, 1,
     ]);
 
+    let imageDirty = true;
+    let transformDirty = false;
+
     const settings = {
         projection: "perspective",
         rendering: "transparent",
@@ -159,6 +162,14 @@
             yz: 0,
             yw: 0,
             zw: 0
+        },
+        autoRotations: {
+            xy: false,
+            xz: false,
+            xw: false,
+            yz: false,
+            yw: false,
+            zw: false
         },
         scales: {
             x: 1,
@@ -175,15 +186,35 @@
             "negZ": true,
             "posW": true,
             "negW": true
+        },
+        reset: {
+            rotation() {
+                for (const plane in settings.rotations) {
+                    settings.rotations[plane] = 0;
+                }
+                transformDirty = true;
+                imageDirty = true;
+            },
+            scale() {
+                for (const axis in settings.scales) {
+                    settings.scales[axis] = 1;
+                }
+                transformDirty = true;
+                imageDirty = true;
+            },
+            visibility() {
+                for (const direction in settings.visibility) {
+                    settings.visibility[direction] = true;
+                }
+                imageDirty = true;
+            }
         }
     };
 
-    let imageDirty = true;
     const setImageDirty = () => {
         imageDirty = true; 
     };
 
-    let transformDirty = false;
     const setTransformDirty = () => {
         imageDirty = true; 
         transformDirty = true; 
@@ -196,29 +227,40 @@
     gui.add(settings, "unfold", 0, 1).step(0.01).name("Unfold").onChange(setTransformDirty);
 
     const rotationFolder = gui.addFolder("Rotate")
-    rotationFolder.add(settings.rotations, "xw", 0, 360).name("XW").onChange(setTransformDirty);
-    rotationFolder.add(settings.rotations, "yw", 0, 360).name("YW").onChange(setTransformDirty);
-    rotationFolder.add(settings.rotations, "zw", 0, 360).name("ZW").onChange(setTransformDirty);
-    rotationFolder.add(settings.rotations, "xy", 0, 360).name("XY").onChange(setTransformDirty);
-    rotationFolder.add(settings.rotations, "xz", 0, 360).name("XZ").onChange(setTransformDirty);
-    rotationFolder.add(settings.rotations, "yz", 0, 360).name("YZ").onChange(setTransformDirty);
+    rotationFolder.add(settings.rotations, "xw", 0, 360).name("XW").listen().onChange(setTransformDirty);
+    rotationFolder.add(settings.rotations, "yw", 0, 360).name("YW").listen().onChange(setTransformDirty);
+    rotationFolder.add(settings.rotations, "zw", 0, 360).name("ZW").listen().onChange(setTransformDirty);
+    rotationFolder.add(settings.rotations, "xy", 0, 360).name("XY").listen().onChange(setTransformDirty);
+    rotationFolder.add(settings.rotations, "xz", 0, 360).name("XZ").listen().onChange(setTransformDirty);
+    rotationFolder.add(settings.rotations, "yz", 0, 360).name("YZ").listen().onChange(setTransformDirty);
+    rotationFolder.add(settings.reset, "rotation").name("Reset Rotation").onChange(setTransformDirty);
     rotationFolder.open();
 
+    const autoRotationFolder = gui.addFolder("Autorotate")
+    autoRotationFolder.add(settings.autoRotations, "xw").name("XW");
+    autoRotationFolder.add(settings.autoRotations, "yw").name("YW");
+    autoRotationFolder.add(settings.autoRotations, "zw").name("ZW");
+    autoRotationFolder.add(settings.autoRotations, "xy").name("XY");
+    autoRotationFolder.add(settings.autoRotations, "xz").name("XZ");
+    autoRotationFolder.add(settings.autoRotations, "yz").name("YZ");
+
     const scaleFolder = gui.addFolder("Scale")
-    scaleFolder.add(settings.scales, "x", 0, 1).name("X").step(0.01).onChange(setTransformDirty);
-    scaleFolder.add(settings.scales, "y", 0, 1).name("Y").step(0.01).onChange(setTransformDirty);
-    scaleFolder.add(settings.scales, "z", 0, 1).name("Z").step(0.01).onChange(setTransformDirty);
-    scaleFolder.add(settings.scales, "w", 0, 1).name("W").step(0.01).onChange(setTransformDirty);
+    scaleFolder.add(settings.scales, "x", 0, 1).name("X").step(0.01).listen().onChange(setTransformDirty);
+    scaleFolder.add(settings.scales, "y", 0, 1).name("Y").step(0.01).listen().onChange(setTransformDirty);
+    scaleFolder.add(settings.scales, "z", 0, 1).name("Z").step(0.01).listen().onChange(setTransformDirty);
+    scaleFolder.add(settings.scales, "w", 0, 1).name("W").step(0.01).listen().onChange(setTransformDirty);
+    scaleFolder.add(settings.reset, "scale").name("Reset Scale").onChange(setTransformDirty);
 
     const visibilityFolder = gui.addFolder("Cell Visibility");
-    visibilityFolder.add(settings.visibility, "posX").name("Positive X").onChange(setImageDirty);
-    visibilityFolder.add(settings.visibility, "negX").name("Negative X").onChange(setImageDirty);
-    visibilityFolder.add(settings.visibility, "posY").name("Positive Y").onChange(setImageDirty);
-    visibilityFolder.add(settings.visibility, "negY").name("Negative Y").onChange(setImageDirty);
-    visibilityFolder.add(settings.visibility, "posZ").name("Positive Z").onChange(setImageDirty);
-    visibilityFolder.add(settings.visibility, "negZ").name("Negative Z").onChange(setImageDirty);
-    visibilityFolder.add(settings.visibility, "posW").name("Positive W").onChange(setImageDirty);
-    visibilityFolder.add(settings.visibility, "negW").name("Negative W").onChange(setImageDirty);
+    visibilityFolder.add(settings.visibility, "posX").name("Positive X").listen().onChange(setImageDirty);
+    visibilityFolder.add(settings.visibility, "negX").name("Negative X").listen().onChange(setImageDirty);
+    visibilityFolder.add(settings.visibility, "posY").name("Positive Y").listen().onChange(setImageDirty);
+    visibilityFolder.add(settings.visibility, "negY").name("Negative Y").listen().onChange(setImageDirty);
+    visibilityFolder.add(settings.visibility, "posZ").name("Positive Z").listen().onChange(setImageDirty);
+    visibilityFolder.add(settings.visibility, "negZ").name("Negative Z").listen().onChange(setImageDirty);
+    visibilityFolder.add(settings.visibility, "posW").name("Positive W").listen().onChange(setImageDirty);
+    visibilityFolder.add(settings.visibility, "negW").name("Negative W").listen().onChange(setImageDirty);
+    visibilityFolder.add(settings.reset, "visibility").name("Reset Visibility").onChange(setImageDirty);
 
     const moreInfoPanel = document.getElementById("more-info");
     document.getElementById("more-info-button").addEventListener("click", e => {
@@ -401,6 +443,16 @@
 
         function draw() {
             requestAnimationFrame(draw);
+
+            const {rotations, autoRotations} = settings;
+
+            for (const plane in autoRotations) {
+                if (autoRotations[plane]) {
+                    rotations[plane] = (rotations[plane] + 1) % 360;
+                    transformDirty = true;
+                    imageDirty = true;
+                } 
+            }
 
             if (!imageDirty) {
                 return;

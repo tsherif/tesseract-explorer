@@ -38,6 +38,8 @@ The 3D projection of the tesseract can be explored using the mouse. Click and dr
 
 - **Rotate**: Rotate the tesseract along any of the 6 planes formed by pairs of axes in 4D space. The first 3 rotations include the W-axis, and thus will affect the projection more directly.
 
+- **Autorotate**: Animate rotation of the tesseract along any of the 6 planes formed by pairs of axes in 4D space.
+
 - **Scale**: Scale the tesseract along any of the 4 axes in 4D space. Scaling shows a sweep across the 4D hypervolume (in the same way scaling a 3D cube along one axis shows the sweep across its internal 3D volume).
 
 - **Cell Visibility**: Hide or show individual cells. This can make it easier to follow certain transformations.
