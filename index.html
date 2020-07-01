@@ -57,10 +57,10 @@
     </div>
     <div id="more-info">
         <div class="paragraph">
-            A tesseract is also known as a hypercube or 8-cell. It is the 4D analog to the 2D square and the 3D cube. Its 3D "surface" is composed of 8 cubes, which enclose a 4D hypervolume. What is rendered here is not the actual tesseract, but its projection into 3D space in a process similar to photographing a 3D world onto 2D camera film. 
+            A <a href="https://en.wikipedia.org/wiki/Tesseract" target="_blank">tesseract</a> is also known as a hypercube or 8-cell. It is the 4D analog to the 2D square and the 3D cube. Its 3D "surface" is composed of 8 cubes, which enclose a 4D hypervolume. What is rendered here is not the actual tesseract, but its projection into 3D space in a process similar to photographing a 3D world onto 2D camera film. 
         </div>
         <div class="paragraph">
-            More information on 4D projections and descriptions of the available controls are provided in <a href="https://github.com/tsherif/tesseract-explorer#tesseract-explorer" target="_blank">the documentation</a>.
+            More information on 4D projections and descriptions of the available controls are provided in the <a href="https://github.com/tsherif/tesseract-explorer#tesseract-explorer" target="_blank">documentation</a>.
         </div>
     </div>
 </div>
@@ -178,15 +178,21 @@
         }
     };
 
+    let imageDirty = true;
+    const setImageDirty = () => {
+        imageDirty = true; 
+    };
+
     let transformDirty = false;
-    const  setTransformDirty = () => { 
+    const setTransformDirty = () => {
+        imageDirty = true; 
         transformDirty = true; 
     };
 
     const gui = new dat.GUI();
-    gui.add(settings, "rendering", ["transparent", "cutout", "solid"]).name("Rendering");
+    gui.add(settings, "rendering", ["transparent", "cutout", "solid"]).name("Rendering").onChange(setImageDirty);
     gui.add(settings, "projection", ["perspective", "orthographic"]).name("Projection").onChange(setTransformDirty);
-    gui.add(settings, "colorization", ["axis", "cell"]).name("Colorization");
+    gui.add(settings, "colorization", ["axis", "cell"]).name("Colorization").onChange(setImageDirty);
     gui.add(settings, "unfold", 0, 1).step(0.01).name("Unfold").onChange(setTransformDirty);
 
     const rotationFolder = gui.addFolder("Rotate")
@@ -205,14 +211,14 @@
     scaleFolder.add(settings.scales, "w", 0, 1).name("W").step(0.01).onChange(setTransformDirty);
 
     const visibilityFolder = gui.addFolder("Cell Visibility");
-    visibilityFolder.add(settings.visibility, "posX").name("Positive X");
-    visibilityFolder.add(settings.visibility, "negX").name("Negative X");
-    visibilityFolder.add(settings.visibility, "posY").name("Positive Y");
-    visibilityFolder.add(settings.visibility, "negY").name("Negative Y");
-    visibilityFolder.add(settings.visibility, "posZ").name("Positive Z");
-    visibilityFolder.add(settings.visibility, "negZ").name("Negative Z");
-    visibilityFolder.add(settings.visibility, "posW").name("Positive W");
-    visibilityFolder.add(settings.visibility, "negW").name("Negative W");
+    visibilityFolder.add(settings.visibility, "posX").name("Positive X").onChange(setImageDirty);
+    visibilityFolder.add(settings.visibility, "negX").name("Negative X").onChange(setImageDirty);
+    visibilityFolder.add(settings.visibility, "posY").name("Positive Y").onChange(setImageDirty);
+    visibilityFolder.add(settings.visibility, "negY").name("Negative Y").onChange(setImageDirty);
+    visibilityFolder.add(settings.visibility, "posZ").name("Positive Z").onChange(setImageDirty);
+    visibilityFolder.add(settings.visibility, "negZ").name("Negative Z").onChange(setImageDirty);
+    visibilityFolder.add(settings.visibility, "posW").name("Positive W").onChange(setImageDirty);
+    visibilityFolder.add(settings.visibility, "negW").name("Negative W").onChange(setImageDirty);
 
     const moreInfoPanel = document.getElementById("more-info");
     document.getElementById("more-info-button").addEventListener("click", e => {
@@ -361,16 +367,21 @@
 
         let zoom = vec3.length(vec3.subtract([], eye, look));
         setupInteractions(canvas, {
-            onDrag: (dx, dy) => orbitCamera(eye, look, up, dx, dy),
+            onDrag: (dx, dy) => {
+                orbitCamera(eye, look, up, dx, dy);
+                imageDirty = true;
+            },
             onWheel: d => {
                 zoom += d;
                 zoom = Math.max(MIN_ZOOM, Math.min(zoom, MAX_ZOOM));
                 zoomCamera(eye, look, zoom);
+                imageDirty = true;
             },
             onPinch: d => {
                 zoom += d;
                 zoom = Math.max(MIN_ZOOM, Math.min(zoom, MAX_ZOOM));
                 zoomCamera(eye, look, zoom);
+                imageDirty = true;
             }
         });
 
@@ -381,6 +392,7 @@
             app.resize(canvas.width, canvas.height);
             oitBuffer.resize(app.width * SSAA_MULTIPLIER, app.height * SSAA_MULTIPLIER);
             shadowBuffer.resize();
+            imageDirty = true;
         });
 
         /////////////////
@@ -388,6 +400,14 @@
         /////////////////
 
         function draw() {
+            requestAnimationFrame(draw);
+
+            if (!imageDirty) {
+                return;
+            }
+
+            imageDirty = false;
+
             const transparent = settings.rendering === "transparent";
             const cutout = settings.rendering === "cutout";
             const colors = settings.colorization === "axis" ? COLORS_AXIS : COLORS_CELL;
@@ -477,8 +497,6 @@
                     }
                 }
             }
-            
-            requestAnimationFrame(draw);
         }
 
         requestAnimationFrame(draw);
