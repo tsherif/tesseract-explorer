@@ -448,7 +448,7 @@
 
             for (const plane in autoRotations) {
                 if (autoRotations[plane]) {
-                    rotations[plane] = (rotations[plane] + 1) % 360;
+                    rotations[plane] = (rotations[plane] + 0.5) % 360;
                     transformDirty = true;
                     imageDirty = true;
                 } 
