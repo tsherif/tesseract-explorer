@@ -2,7 +2,7 @@
 
 Welcome to the 4<sup>th</sup> dimension! Visit the live application [here](https://tsherif.github.io/tesseract-explorer/)!
 
-![Tesseract](img/tesseract-512x512.png?raw=true)
+![Tesseract](img/tesseract-350x350.png?raw=true)
 
 ## What's a Tesseract?
 
