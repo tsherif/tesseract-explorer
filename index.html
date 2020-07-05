@@ -441,14 +441,19 @@
         // RENDER LOOP
         /////////////////
 
+        let lastTime = performance.now();
         function draw() {
             requestAnimationFrame(draw);
+
+            const currentTime = performance.now();
+            const timeElapsed = Math.min(currentTime - lastTime, 100);
+            lastTime = currentTime;
 
             const {rotations, autoRotations} = settings;
 
             for (const plane in autoRotations) {
                 if (autoRotations[plane]) {
-                    rotations[plane] = (rotations[plane] + 0.5) % 360;
+                    rotations[plane] = (rotations[plane] + 0.02 * timeElapsed) % 360;
                     transformDirty = true;
                     imageDirty = true;
                 } 
