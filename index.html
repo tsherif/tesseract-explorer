@@ -527,7 +527,7 @@
                     for (let i = 0; i < objects.length; ++i) {
                         const object = objects[i];
                         if (settings.visibility[object.direction]) {
-                            app.gl.polygonOffset(i * 0.1, i);
+                            app.polygonOffset(i * 0.1, i);
                             objects[i].shadowDrawCall
                             .uniform("proj", projMatrix)
                             .uniform("view", shadowViewMatrix)
