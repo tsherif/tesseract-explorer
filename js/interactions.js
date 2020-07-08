@@ -27,7 +27,6 @@ export function setupInteractions(canvas, handlers = {}) {
     let dragging = false;
     let lastX = -1;
     let lastY = -1;
-    const DRAG_SCALE = 0.01;
     canvas.addEventListener("mousedown", e => {
         e.stopPropagation();
         e.preventDefault();
@@ -45,12 +44,11 @@ export function setupInteractions(canvas, handlers = {}) {
         e.stopPropagation();
         e.preventDefault();
 
-        let dx = -(e.clientX - lastX) * DRAG_SCALE;
-        let dy = -(e.clientY - lastY) * DRAG_SCALE;
+        let dx = e.clientX - lastX;
+        let dy = e.clientY - lastY;
 
         onDrag(dx, dy);
 
-        //orbitCamera(eye, look, up, dx, dy)
         lastX = e.clientX;
         lastY = e.clientY;
     });
@@ -60,21 +58,14 @@ export function setupInteractions(canvas, handlers = {}) {
         lastX = -1;
         lastY = -1;
     });
-
-    const WHEEL_SCALE = 0.11;
     
     canvas.addEventListener("wheel", e => {
         e.stopPropagation();
         e.preventDefault();
 
-        onWheel(Math.sign(e.deltaY) * WHEEL_SCALE);
-
-        // zoom += Math.sign(e.deltaY) * WHEEL_SCALE;
-        // zoom = Math.max(MIN_ZOOM, Math.min(zoom, MAX_ZOOM));
-        // zoomCamera(eye, look, zoom);
+        onWheel(Math.sign(e.deltaY));
     });
 
-    const PINCH_SCALE = 0.05;
     let touchDragging = false;
     let touchPinching = false;
     let lastTouchX = -1;
@@ -115,11 +106,10 @@ export function setupInteractions(canvas, handlers = {}) {
         if (touchDragging) {
             const touch = e.touches[0];
 
-            const dx = -(touch.clientX - lastTouchX) * DRAG_SCALE;
-            const dy = -(touch.clientY - lastTouchY) * DRAG_SCALE;
+            const dx = touch.clientX - lastTouchX;
+            const dy = touch.clientY - lastTouchY;
 
             onDrag(dx, dy);
-            // orbitCamera(eye, look, up, dx, dy)
             
             lastTouchX = touch.clientX;
             lastTouchY = touch.clientY;
@@ -143,10 +133,7 @@ export function setupInteractions(canvas, handlers = {}) {
                 const separation = Math.sqrt(separationX * separationX + separationY * separationY);
                 const lastSeparation = Math.sqrt(lastSeparationX * lastSeparationX + lastSeparationY * lastSeparationY);
 
-                onPinch((lastSeparation - separation) * PINCH_SCALE);
-                // zoom += (lastSeparation - separation) * PINCH_SCALE;
-                // zoom = Math.max(MIN_ZOOM, Math.min(zoom, MAX_ZOOM));
-                // zoomCamera(eye, look, zoom);
+                onPinch(lastSeparation - separation);
             }
 
             lastTouchX = touch1.clientX;

@@ -407,20 +407,23 @@
         // INTERACTIONS
         /////////////////
 
+        const DRAG_SCALE = 0.01;
+        const WHEEL_SCALE = 0.11;
+        const PINCH_SCALE = 0.05;
         let zoom = vec3.length(vec3.subtract([], eye, look));
         setupInteractions(canvas, {
             onDrag: (dx, dy) => {
-                orbitCamera(eye, look, up, dx, dy);
+                orbitCamera(eye, look, up, -dx * DRAG_SCALE, -dy * DRAG_SCALE);
                 imageDirty = true;
             },
             onWheel: d => {
-                zoom += d;
+                zoom += d * WHEEL_SCALE;
                 zoom = Math.max(MIN_ZOOM, Math.min(zoom, MAX_ZOOM));
                 zoomCamera(eye, look, zoom);
                 imageDirty = true;
             },
             onPinch: d => {
-                zoom += d;
+                zoom += d * PINCH_SCALE;
                 zoom = Math.max(MIN_ZOOM, Math.min(zoom, MAX_ZOOM));
                 zoomCamera(eye, look, zoom);
                 imageDirty = true;
